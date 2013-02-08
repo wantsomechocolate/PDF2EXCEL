@@ -12,8 +12,10 @@ raw_Castle_Lib = (["Address","RE:",1,RIGHT,50],
                   ["Total-Discount","PAY ONLY",1,RIGHT,10],
                   ["Delivery Date","AMOUNT",1,RIGHT,10],
                   ["Fuel Oil Type","FUEL OIL",1,LEFT,2])
+
 #Collection type, data name, keyword, instance, direction, raw chars to collect,
 #stop_method, stop_key, use in final table
+
 refined_Castle_Lib = ([0,"Address","RE:",1,RIGHT,30,"keyword","DATE","NO"],
                   [0,"Account#","ACCOUNT",1,RIGHT,30,"numbers",3,"NO"],
                   [0,"Gallons","P.B.T.",1,LEFT,30,"space-delimited",2,"YES"],
@@ -25,20 +27,27 @@ refined_Castle_Lib = ([0,"Address","RE:",1,RIGHT,30,"keyword","DATE","NO"],
                   [0,"Delivery Date","AMOUNT",1,RIGHT,30,"date","mm/dd/yyyy","YES"],
                   [0,"Fuel Oil Type","FUEL OIL",1,LEFT,30,"keyword-include","#","YES"],
                   [1,"Cost","ADD","Total-Discount","Total-Discount"])
-def get_index1(haystack, needle, n):
-    start = haystack.find(needle)
-    while start >= 0 and n > 1:
-        start = haystack.find(needle, start+len(needle))
-        n -= 1
-    return start
-def get_index(text,flag,inst):
-    index=0
-    for i in range(inst):
-        try:
-            index=text.index(flag,index)
-        except:
-            index="Instance Not Found"
-    return index
+
+
+def get_index(text,flag,inst,direc):
+
+    if direc==RIGHT:
+        char_index=0
+        for i in range(inst):
+            try:
+                char_index=text.index(flag,char_index)
+            except:
+                char_index="Instance Not Found"
+        return char_index
+    else:
+        char_index=len(text)
+        for i in range(inst):
+            try:
+                char_index=text.rindex(flag,char_index)
+            except:
+                char_index="Instance Not Found"
+        return char_index
+
 def csv_printer(data_list,file_path):
     file_handle=file(file_path,'a')
     for item in data_list:
@@ -50,8 +59,10 @@ def csv_printer(data_list,file_path):
         file_handle.write(",")
     file_handle.write("\n")
     file_handle.close()
+    
 def raw_extract(raw_lib,page_text):
     print "stuff"
+    
 def get_raw_chars(page_string,data_flag,flag_inst,direction,num_chars):
     try:
         if direction==RIGHT:
@@ -65,6 +76,7 @@ def get_raw_chars(page_string,data_flag,flag_inst,direction,num_chars):
     except:
         raw_text="FLAG NOT FOUND"
     return raw_text
+
 def stop_key_string(lib_entry,raw_text):
     if direction==RIGHT:
         end_index=get_index(raw_text,stop_key,stop_inst,RIGHT)
@@ -72,6 +84,12 @@ def stop_key_string(lib_entry,raw_text):
     else:
         start_index=get_index(raw_text,stop_key,stop_inst,LEFT)
         refined_text=raw_text[start_index:].strip()
+
+
+def stop_key_number(
+
+
+
 def refined_extract(refined_lib,page_text):
     if raw_lib=="raw_Castle_Lib":
         raw_lib=raw_Castle_Lib
