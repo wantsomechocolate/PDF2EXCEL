@@ -137,11 +137,13 @@ def refined_extract(refined_lib,page_text):
     for entry in refined_lib:
         #if collection type is 0 then: (Collection type denotes wether you need to get a new string
         # or use already collected values (like summing two values)
-        
         coll_type,data_type,data_flag,flag_inst,direction,num_chars,stop_mthd,stop_key,fin_tab=entry[:]
-        
+        #This gets a number of characters near the flag to make analysis easier
         raw_text=get_raw_chars(page_text,data_flag,flag_inst,direction,num_chars)
+        ## put all the raw text into a list
         raw_text_list.append(raw_text)
+
+    ##-----I don't know what's going on down here.-------
         #else:
     pretty_print=[]
     for i in range(len(raw_Castle_Lib)):
