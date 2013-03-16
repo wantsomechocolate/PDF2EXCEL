@@ -18,36 +18,36 @@ import Tkinter, tkFileDialog
 
 ## Import the extraction stuff
 import extraction
-dest_file_extraction="test.csv"
 
-#Get a filename
-def getPdfPath():
-    origDir=os.getcwd()
-    #testDir="C:\Users\James McGlynn\My Programs\Python Programs\pdf2txt\WorkRelated\Castle"
-    #os.chdir(testDir)
-    root=Tkinter.Tk()                           ##  Explicitly call the root window so that you can...
-    root.withdraw()                             ##  withdraw it!
-    filePath=tkFileDialog.askopenfilename()     ##  imageFile will store the filename of the image you choose   
-    root.destroy()                              ##  Some overkill
-    os.chdir(origDir)
-    return filePath
+import useful
+
+dest_file_extraction="test.csv"
+default_directory="C:\Users\James McGlynn\My Programs\Python Programs\pdf2txt\WorkRelated\Castle"
+
 
 ##  Takes a pdf path as an argument and returns the number of pages in that pdf
 def getNumPages(inputFile):
     input1=PdfFileReader(file(inputFile,"rb"))
     num_pages=input1.getNumPages()
     return num_pages
+    ## I don't why I need to do with with its own function - don't judge me
+    ## Return a friggin integer
 
 ##  Takes a pdf, the page to scale and a zoom factor to scale by and
 ##  returns the path to a new pdf document that is scaled by the scale factor
 def scalePDF(inputFile,pageNumber,zoomFactor):
-    print "SCALING  PDF   TO  INCREASE"
-    print "IMAGE QUALITY FOR TESSERACT"
-    print "---------------------------------------------------"
+    #print "SCALING PDF TO INCREASE IMAGE QUALITY FOR TESSERACT"
+    #print "---------------------------------------------------"
     #Proper indexing
     pageNumber=pageNumber-1
-    #Generate output filename
-    outputFile=inputFile[:inputFile.rindex('.')]+'_'+str(pageNumber+1)+'.pdf'
+    
+    #Generate output filename (Puts everything in its own directory)
+    outputDirectory=inputFile[:inputFile.rindex('.')]#+inputFile[inputFile.rindex('/'):inputFile.rindex('.')]+inputFile[inputFile.rindex('/'):inputFile.rindex('.')]
+    #print outputDirectory
+    if not os.path.exists(outputDirectory): os.makedirs(outputDirectory)
+
+    outputFile=inputFile[:inputFile.rindex('/')]+inputFile[inputFile.rindex('/'):inputFile.rindex('.')]+inputFile[inputFile.rindex('/'):inputFile.rindex('.')]+'_'+str(pageNumber+1)+'.pdf'
+    #outputFile=inputFile[:inputFile.rindex('.')]+'_'+str(pageNumber+1)+'.pdf'
     output=PdfFileWriter()
     input1=PdfFileReader(file(inputFile,"rb"))
     page = input1.getPage(pageNumber)
@@ -56,55 +56,62 @@ def scalePDF(inputFile,pageNumber,zoomFactor):
     try:
         page.scaleBy(zoomFactor)
     except:
-        print "PAGE WAS NOT SCALED: "+str(pageNumber+1)
-        print "---------------------------------------------------"
+        print "---PAGE WAS NOT SCALED: "+str(pageNumber+1)
+        #print "---------------------------------------------------"
     #Add page to output
     output.addPage(page)
     #Print just the file name
-    print "SAVING   SCALED    PDF   AS: "+outputFile[outputFile.rindex('/')+1:]
-    print "---------------------------------------------------"
+    #print "SAVING   SCALED    PDF   AS: "+outputFile[outputFile.rindex('/')+1:]
+    #print "---------------------------------------------------"
     outputStream = file(outputFile, "wb")
     output.write(outputStream)
     outputStream.close()
     return outputFile
+    ## This returns a filepath - not a filename - it's intermediate - should I delete when done? Probably
 
 ##  Takes a path to a (scaled) pdf and saves it as an image.
 ##  Then it returns the image path
 def pdf2img(pdf_path):
-    print "CONVERTING PDF TO AN IMAGE: "+pdf_path[pdf_path.rindex('/')+1:]
-    print "---------------------------------------------------"
+    #print "CONVERTING SCALED PDF TO AN IMAGE"
+    #print "---------------------------------------------------"
     img = Image(filename=pdf_path)
     imgname=pdf_path[:pdf_path.rindex('.')]+ext
-    print "SAVING THE  IMAGE WITH NAME: "+imgname[imgname.rindex('/')+1:]
-    print "---------------------------------------------------"
+    #print "SAVING CONVERTED IMAGE AS: "+imgname[imgname.rindex('/')+1:]
+    #print "---------------------------------------------------"
     img.save(filename=imgname)
     return imgname
+    #print "Is this a filename or filepath: " + imgname
+    ## This returns the filename of an image - not a file path
 
 ##  Takes the image path and uses tess to return a string
 def img2txt(image_path):
-    print "CONVERTING IMAGE TO TEXT"
+    #print "CONVERTING IMAGE TO TEXT"
+    #print "---------------------------------------------------"
     image=cv.LoadImage(image_path, cv.CV_LOAD_IMAGE_GRAYSCALE)
     tesseract.SetCvImage(image,api)
     text=api.GetUTF8Text()
-    word_list_inter=text#.split()
-    return word_list_inter
+    ##  Remove every '\n' PUT IN BY TESS and put everything back together with a space!    
+    page_text=" ".join(text.splitlines())
+    #print "Text for " + image_path + " : " + text
+    return page_text
+    ## This is just a string (without newlines in it)
 
 ## Takes the string generated by tess, the target pdf (Just for filename generation)
 ## And i? I don't know why i gets passed, it gets reassigned anyway, I'll take it out later
-def printOutput(word_list,target_pdf,i):
-    outputFile=target_pdf[:target_pdf.rindex('.')]+'_text_output_zoom4.txt'
-    filehandle=file(outputFile,'a')
-    filehandle.write("TEXT FOR PAGE "+str(i))
-    filehandle.write("\n")
-    for i in range(len(word_list)):
-        filehandle.write(word_list[i])
-        filehandle.write(" ")
-    filehandle.write('\n')
-    return outputFile
+####def printOutput(word_list,target_pdf,i):
+####    outputFile=target_pdf[:target_pdf.rindex('.')]+'_text_output_zoom4.txt'
+####    filehandle=file(outputFile,'a')
+####    filehandle.write("TEXT FOR PAGE "+str(i))
+####    filehandle.write("\n")
+####    for i in range(len(word_list)):
+####        filehandle.write(word_list[i])
+####        filehandle.write(" ")
+####    filehandle.write('\n')
+####    return outputFile
 
-## This takes the same stuff as above, but is for printing a string, instead of an array
+## This takes a 
 def printOutput1(word_list,target_pdf,i):
-    outputFile=target_pdf[:target_pdf.rindex('.')]+'_text_output_zoom4.txt'
+    outputFile=target_pdf[:target_pdf.rindex('.')]+' Text Output.txt'
     filehandle=file(outputFile,'a')
     filehandle.write("TEXT FOR PAGE "+str(i))
     filehandle.write("\n")
@@ -119,14 +126,14 @@ def printOutput1(word_list,target_pdf,i):
 ## the user make the PDF themselves? because this program still doesn't really
 ## know how to handle blank pages.
 
-target_pdf = getPdfPath()
-print target_pdf
+target_pdf = useful.getPath(default_directory)
+#print target_pdf
 print "---------------------------------------------------"
 print "THE TARGET PDF FILENAME IS: "+target_pdf[target_pdf.rindex('/')+1:]
-print "---------------------------------------------------"
+#print "---------------------------------------------------"
 
 ##  Initializations for Tess
-print "Importing Tess"
+#print "Importing Tess"
 api = tesseract.TessBaseAPI()   
 api.SetOutputName("outputName");
 api.Init(".","eng",tesseract.OEM_DEFAULT)
@@ -139,8 +146,8 @@ ext='.png'          #Desired Image Extension
 
 ## Get num of pages in pdf
 num_pages=getNumPages(target_pdf)
-print "NUMBER OF PAGES IN PDFFILE: "+str(num_pages)
-print "---------------------------------------------------"
+print "THE NUMBER OF PAGES IN THE PDF IS: "+str(num_pages)
+#print "---------------------------------------------------"
 
 ##  Some empty lists for storing the data from multiple pages
 scaled_pdf, converted_image, word_list=[],[],[]
@@ -156,25 +163,28 @@ for i in range(num_pages):
     converted_image_inter=pdf2img(scaled_pdf_inter)
 
     ## not really a list anymore, passes the image to tess which makes it into a string
+    print "EXTRACTING TEXT FROM PAGE: "+str(i+1)
     word_list_inter=img2txt(converted_image_inter)
 
     ##THIS IS THE HEART OF THE PROGRAM
     ##It's not meant to be raw anymore, it's meant to return a list of the desired information
     ## based on the libraries above. Eventually, you'll be able to make libraries on the fly.
     ## and they obviously won't be stored in the .py file
-    raw_text_list=extraction.raw_extract("raw_Castle_Lib",word_list_inter)
+
+    #raw_text_list=extraction.refined_extract("raw_Castle_Lib",word_list_inter)
+    #print raw_text_list
 
     ## When the list comes back, I want to print it to a .xlsx, possibly even
     ## a .xlsm. The printing thing has to be pretty smart and compare account numbers
     ## to print like bills with like bills.
-    extraction.csv_printer(raw_text_list,dest_file_extraction)
+    #extraction.csv_printer(raw_text_list,dest_file_extraction)
 
 #----Gather data from every page----
     scaled_pdf.append(scaled_pdf_inter)
     converted_image.append(converted_image_inter)
     word_list.append(word_list_inter)
 
-    print "---------------------------------------------------"
+    #print "---------------------------------------------------"
     print "WRITING EXTRACTED TEXT TO FILE"
     printOutput1(word_list[i],target_pdf,i)
 
