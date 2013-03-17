@@ -1,3 +1,6 @@
+## Use a keyed list for the library
+## That way the order doesn't matter!
+
 ## Extraction Algorithms
 RIGHT=1
 LEFT=-1
@@ -11,12 +14,58 @@ refined_Castle_Lib = ([0,"Address","RE:",1,RIGHT,40,"keyword","(",1,"NO"],
                   [0,"Account#","ACCOUNT",1,RIGHT,30,"space-delimited",1,2,"NO"],
                   [0,"Gallons","P.B.T.",1,LEFT,30,"space-delimited",2,1,"YES"],
                   [0,"Base Price","P.B.T.",1,LEFT,30,"space-delimited-refine-chars",1,0,"NO"],
-                  [0,"Tax","NY SALES TAX",1,LEFT,30,"space-delimited",1,0,"NO"],
-                  [0,"Sales Tax","NY SALES TAX",1,RIGHT,30,"space-delimited",1,2,"NO"],
+                  #[0,"Tax","NY SALES TAX",1,LEFT,30,"space-delimited",1,0,"NO"],
+                  #[0,"Sales Tax","NY SALES TAX",1,RIGHT,30,"space-delimited",1,2,"NO"],
                   [0,"Discount","COUNT =",1,RIGHT,30,"numbers-with-buffer-decimal-number",3,1,"NO"],
                   [0,"Total-Discount","PAY ONLY",1,RIGHT,30,"numbers-with-buffer-decimal-number",3,1,"NO"],
                   [0,"Delivery Date","AMOUNT",1,RIGHT,30,"numbers-with-buffer-date",2,1,"YES"],
-                  [0,"Fuel Oil Type","FUEL OIL",1,LEFT,30,"keyword-include","#",1,"YES"])
+                  [0,"Fuel Oil Type","FUEL OIL",1,LEFT,5,"keyword-include","#",1,"YES"])
+
+refined_Castle_Lib_Keyed = ({'address':{
+                                'data_flag'                : 'RE:',
+                                'data_flag_inst'           : 1,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 40,
+                                'collection_method'        : 'keyword',
+                                'collection_parameter_1'   : '(',
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'NO',
+                                'collection_type'          : 0}},
+                            
+                            {'account number':{
+                                'data_flag'                : 'ACCOUNT',
+                                'data_flag_inst'           : 1,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'space-delimited',
+                                'collection_parameter_1'   : 1,
+                                'collection_parameter_2'   : 2,
+                                'include_in_final'         : 'NO',
+                                'collection_type'          : 0}},
+                            
+                            {'gallons':{
+                                'data_flag'                : 'P.B.T.',
+                                'data_flag_inst'           : 1,
+                                'direction'                : LEFT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'space-delimited',
+                                'collection_parameter_1'   : 2,
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'YES',
+                                'collection_type'          : 0}},
+
+                            {'base price':{
+                                'data_flag'                : 'P.B.T.',
+                                'data_flag_inst'           : 1,
+                                'direction'                : LEFT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'space-delimited-refine-chars',
+                                'collection_parameter_1'   : 1,
+                                'collection_parameter_2'   : 0,
+                                'include_in_final'         : 'NO',
+                                'collection_type'          : 0}},)
+
+                            
 
 ##Add this in once the others are working
 ##,[1,"Cost","ADD","Total-Discount","Total-Discount"])
@@ -328,10 +377,6 @@ for i in range(0,len(lines),2):
     page_list=[]
 
 
-##from openpyxl import Workbook
-##wb = Workbook()
-##ws=wb.get_active_sheet()
-##match=0
 
 ## The collection process
 refined_results=[]
@@ -340,13 +385,46 @@ for i in range(len(document_list)):
     result=refined_extract(refined_Castle_Lib, raw_text)   
     refined_results.append(result)
 
-##    sheet_names=wb.get_sheet_names()
-##    for item in sheet_names:
-##        if result[1]==item:
-##            match=1
-##        else:
-##            pass
-##    if match==1: 
+
+## write refined lib to an excel file
+book_name='Castle Oil.xlsx'
+from openpyxl import Workbook
+from openpyxl import load_workbook
+try:
+    wb=load_workbook(book_name)
+except:
+    wb = Workbook()
+    #ws=wb.get_active_sheet()
+
+match=0
+for entry in refined_results:
+    
+    sheet_names=wb.get_sheet_names()
+    #print sheet_names
+    for item in sheet_names:
+        #print entry[1]
+        if entry[1]==item:
+            match=1
+        else:
+            pass
+    if match==1:
+        ws=wb.get_sheet_by_name(entry[1])
+        last_occ_row=ws.rows[-1][0].row
+        #row=last_occ_row
+        #col=0
+        for i in range(len(entry)):
+            c=ws.cell(row=last_occ_row, column=i)
+            c.value=entry[i]
+    else:
+        newSheet=wb.create_sheet()
+        newSheet.title = str(entry[1])
+        for i in range(len(entry)):
+            c=newSheet.cell(row=0, column=i)
+            c.value=entry[i]
+    match=0
+        
+
+wb.save('Castle Oil.xlsx')
 
 
 
