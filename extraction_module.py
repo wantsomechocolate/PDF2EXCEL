@@ -465,83 +465,83 @@ def refined_extract(refined_lib,page_text):
 
 ###--------------------------------------------------------------------------------------------
 ###--------START OF PROGRAM---------------------------------------------------------------
-######import os
-######import useful
-######
-#######Prompt User for text file
-######default_directory="C:\Users\James McGlynn\My Programs\Python Programs\pdf2txt\WorkRelated\Castle"
-######text_file=useful.getPath(default_directory)
-######
-######## Open the text file and put every line in a list
-######with open(text_file,'r') as fh:
-######    lines=fh.readlines()
-######
-######## Because of the way the document was created, I only want every other line
-######page_list=[]
-######document_list=[]
-######for i in range(0,len(lines),2):
-######    page_list.append(lines[i].rstrip('\n'))
-######    page_list.append(lines[i+1].rstrip('\n'))
-######    document_list.append(page_list)
-######    page_list=[]
-######
-######
-######
-######## The collection process
-######refined_results=[]
-######for i in range(len(document_list)):
-######    raw_text=document_list[i][1]
-######    result=refined_extract(refined_Castle_Lib, raw_text)   
-######    refined_results.append(result)
-######
-######    print refined_results
-######
-######
-######## write refined lib to an excel file
-######book_name='Castle Oil.xlsx'
-######from openpyxl import Workbook
-######from openpyxl import load_workbook
-######try:
-######    wb=load_workbook(book_name)
-######except:
-######    wb = Workbook()
-######    #ws=wb.get_active_sheet()
-######
-######match=0
-######for entry in refined_results:
-######    
-######    sheet_names=wb.get_sheet_names()
-######    #print sheet_names
-######    for item in sheet_names:
-######        #print entry[1]
-######        if entry['account number']==item:
-######            match=1
-######        else:
-######            pass
-######    if match==1:
-######        ws=wb.get_sheet_by_name(entry['account number'])
-######        last_occ_row=ws.rows[-1][0].row
-######        #row=last_occ_row
-######        #col=0
-######        i=0
-######        for key in refined_Castle_Lib['library_info']['heading_order']:
-######            c=ws.cell(row=last_occ_row, column=i)
-######            c.value=entry[key]
-######            i=i+1
-######    else:
-######        newSheet=wb.create_sheet()
-######        newSheet.title = str(entry['account number'])
-######        i=0
-######        for key in refined_Castle_Lib['library_info']['heading_order']:
-######            c=newSheet.cell(row=0, column=i)
-######            d=newSheet.cell(row=1, column=i)
-######            c.value=key
-######            d.value=entry[key]
-######            i=i+1
-######    match=0
-######        
-######
-######wb.save('Castle Oil.xlsx')
+import os
+import useful
+
+#Prompt User for text file
+default_directory="C:\Users\James McGlynn\My Programs\Python Programs\pdf2txt\WorkRelated\Castle"
+text_file=useful.getPath(default_directory)
+
+## Open the text file and put every line in a list
+with open(text_file,'r') as fh:
+    lines=fh.readlines()
+
+## Because of the way the document was created, I only want every other line
+page_list=[]
+document_list=[]
+for i in range(0,len(lines),2):
+    page_list.append(lines[i].rstrip('\n'))
+    page_list.append(lines[i+1].rstrip('\n'))
+    document_list.append(page_list)
+    page_list=[]
+
+
+
+## The collection process
+refined_results=[]
+for i in range(len(document_list)):
+    raw_text=document_list[i][1]
+    result=refined_extract(refined_Castle_Lib, raw_text)   
+    refined_results.append(result)
+
+    print refined_results
+
+
+## write refined lib to an excel file
+book_name='Castle Oil.xlsx'
+from openpyxl import Workbook
+from openpyxl import load_workbook
+try:
+    wb=load_workbook(book_name)
+except:
+    wb = Workbook()
+    #ws=wb.get_active_sheet()
+
+match=0
+for entry in refined_results:
+    
+    sheet_names=wb.get_sheet_names()
+    #print sheet_names
+    for item in sheet_names:
+        #print entry[1]
+        if entry['account number']==item:
+            match=1
+        else:
+            pass
+    if match==1:
+        ws=wb.get_sheet_by_name(entry['account number'])
+        last_occ_row=ws.rows[-1][0].row
+        #row=last_occ_row
+        #col=0
+        i=0
+        for key in refined_Castle_Lib['library_info']['heading_order']:
+            c=ws.cell(row=last_occ_row, column=i)
+            c.value=entry[key]
+            i=i+1
+    else:
+        newSheet=wb.create_sheet()
+        newSheet.title = str(entry['account number'])
+        i=0
+        for key in refined_Castle_Lib['library_info']['heading_order']:
+            c=newSheet.cell(row=0, column=i)
+            d=newSheet.cell(row=1, column=i)
+            c.value=key
+            d.value=entry[key]
+            i=i+1
+    match=0
+        
+
+wb.save('Castle Oil.xlsx')
 
 
 
