@@ -1,35 +1,23 @@
-## Use a keyed list for the library
-## That way the order doesn't matter!
+## This is a stand alone file that can be used after
+## the text files are already created. It is not a module
 
-## Extraction Algorithms
+## Declarations for readability
 RIGHT=1
 LEFT=-1
 
-## This is the fine extraction library - below are the names of each piece of data.
+## This is the extraction library - it is particular to a utility. Maybe even more particular than that. 
+## This library will eventually go into a text file or database type thing if I'm feeling up to it. 
 
-#Collection type, data name, keyword, instance, direction, raw chars to collect,
-#stop_method, stop_key, stop_inst, use in final table
-
-##refined_Castle_Lib = ([0,"Address","RE:",1,RIGHT,40,"keyword","(",1,"NO"],
-##                  [0,"Account#","ACCOUNT",1,RIGHT,30,"space-delimited",1,2,"NO"],
-##                  [0,"Gallons","P.B.T.",1,LEFT,30,"space-delimited",2,1,"YES"],
-##                  [0,"Base Price","P.B.T.",1,LEFT,30,"space-delimited-refine-chars",1,0,"NO"],
-##                  #[0,"Tax","NY SALES TAX",1,LEFT,30,"space-delimited",1,0,"NO"],
-##                  #[0,"Sales Tax","NY SALES TAX",1,RIGHT,30,"space-delimited",1,2,"NO"],
-##                  [0,"Discount","COUNT =",1,RIGHT,30,"numbers-with-buffer-decimal-number",3,1,"NO"],
-##                  [0,"Total-Discount","PAY ONLY",1,RIGHT,30,"numbers-with-buffer-decimal-number",3,1,"NO"],
-##                  [0,"Delivery Date","AMOUNT",1,RIGHT,30,"numbers-with-buffer-date",2,1,"YES"],
-##                  [0,"Fuel Oil Type","FUEL OIL",1,LEFT,5,"keyword-include","#",1,"YES"])
-
-refined_Castle_Lib ={'library_info':{
+#Library info is for the order that things get collected and printed and some other info
+refined_Castle_Lib ={'library_info':{ 
 
                         'utility':'Castle Oil',
                         'collection_order':('account number','address','delivery date','fuel oil type',
                                             'gallons','total-discount','discount','base price'),
                         'heading_order':('address','account number','base price','discount','total-discount',
                                          'fuel oil type','delivery date','gallons')},
-
-		    'extraction_parameters':{
+#Extraction parameters contains instructions for collecting each peice of data
+		    'extraction_parameters':{ 
 
                         'address':{
                                 'data_flag'                : 'RE:',
@@ -120,10 +108,136 @@ refined_Castle_Lib ={'library_info':{
                                 'collection_type'          : 0}}}
                             
 
-##Add this in once the others are working
+refined_ConEd_Lib ={'library_info':{ 
+
+                        'utility':'Consolidated Edison',
+                        'collection_order':('Name','Account Number','Rate Structure','G&T Demand1',
+                                            'G&T Demand2','Primary Demand1','Primary Demand2','Secondary Demand1',
+											'Secondary Demand2','Date'),
+                        'heading_order':('Name','Account Number','Rate Structure','Date','G&T Demand1',
+											'G&T Demand2','Primary Demand1','Primary Demand2','Secondary Demand1',
+											'Secondary Demand2')},
+#Extraction parameters contains instructions for collecting each peice of data
+		    'extraction_parameters':{ 
+
+                        'Name':{
+                                'data_flag'                : 'Name:',
+                                'data_flag_inst'           : 1,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 40,
+                                'collection_method'        : 'keyword',
+                                'collection_parameter_1'   : 'Account',
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'NO',
+                                'collection_type'          : 0},
+
+                        'Account Number':{
+                                'data_flag'                : 'Account number:',
+                                'data_flag_inst'           : 1,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'keyword',
+                                'collection_parameter_1'   : "Billing",
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'NO',
+                                'collection_type'          : 0},
+
+                        'Rate Structure':{
+                                'data_flag'                : 'Rate:',
+                                'data_flag_inst'           : 1,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'keyword',
+                                'collection_parameter_1'   : 'We me',
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'YES',
+                                'collection_type'          : 0},
+								
+                        'Date':{
+                                'data_flag'                : 'from',
+                                'data_flag_inst'           : 1,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'keyword',
+                                'collection_parameter_1'   : 'Rate',
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'YES',
+                                'collection_type'          : 0},
+								
+			'G&T Demand1':{
+                                'data_flag'                : 'G &T',
+                                'data_flag_inst'           : 1,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'numbers-with-buffer',
+                                'collection_parameter_1'   : 1,
+                                'collection_parameter_2'   : 2,
+                                'include_in_final'         : 'YES',
+                                'collection_type'          : 0},	
+								
+			'G&T Demand2':{
+                                'data_flag'                : 'G & T',
+                                'data_flag_inst'           : 1,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'numbers-with-buffer',
+                                'collection_parameter_1'   : 'k',
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'YES',
+                                'collection_type'          : 0},	
+								
+                        'Primary Demand1':{
+                                'data_flag'                : 'Primary demand',
+                                'data_flag_inst'           : 1,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'keyword',
+                                'collection_parameter_1'   : 'k',
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'YES',
+                                'collection_type'          : 0},	
+								
+                        'Primary Demand2':{
+                                'data_flag'                : 'Primary demand',
+                                'data_flag_inst'           : 2,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'keyword',
+                                'collection_parameter_1'   : 'k',
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'YES',
+                                'collection_type'          : 0},
+
+                        'Secondary Demand1':{
+                                'data_flag'                : 'Secondary demand',
+                                'data_flag_inst'           : 1,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'keyword',
+                                'collection_parameter_1'   : 'kW',
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'YES',
+                                'collection_type'          : 0},	
+
+                        'Secondary Demand2':{
+                                'data_flag'                : 'Secondary demand',
+                                'data_flag_inst'           : 2,
+                                'direction'                : RIGHT,
+                                'raw_char_collect'         : 30,
+                                'collection_method'        : 'keyword',
+                                'collection_parameter_1'   : 'kW',
+                                'collection_parameter_2'   : 1,
+                                'include_in_final'         : 'YES',
+                                'collection_type'          : 0}
+                        }}
+
+##Add this in once the others are working - The idea is to be able to do some basic calculation
+## While creating the spreadsheet - I also need to work on casting the data I collect to minimize
+## The work I have to do after I open the excel file. 
 ##,[1,"Cost","ADD","Total-Discount","Total-Discount"])
 
-## Character Lists for Certain types of collection methods
+## Character Lists for Certain types of collection methods - I want to change the names of these.
+## The no longer pertain to just one collection method. 
 numbers_with_buffer_decimal_number=(',','.','1','2','3','4','5','6','7','8','9','0')
 numbers_with_buffer_date=('/','|','1','2','3','4','5','6','7','8','9','0')
 
@@ -142,7 +256,7 @@ def get_index(text,flag,inst,direc):
         ## has now been reset and you look for the string again.
         ## if at any time you don't find the string, it doesn't exit the loop (would be smart)
         ## it just keeps assigning the same string to char_index because it won't be able to
-        ## use .index properly. It then returns either a string or an index
+        ## use .index properly. It then returns either a string of failure or an index of success
         return char_index
     
     ## If the direction is LEFT
@@ -153,13 +267,13 @@ def get_index(text,flag,inst,direc):
             try:                    ## See if you can find the string (As char-index is reset,
                                     ##    the piece of string being looked at gets smaller)
                 char_index=text[:char_index].rindex(flag)
-            except:                 ## If you can't make the index a string
+            except:                 ## If you can't find it, make the index a string
                 char_index="Instance Not Found"  ## So that all subsequent searches fail. 
         return char_index           
 
 ## This is a printer I slapped together to see if I was collecting the right stuff,
 ## which is good, because I totally wasn't
-## eventually I will replace this with a xlsx printer (from openpyxl)
+## I replaced this with an xlsx printer (from openpyxl)
 def csv_printer(data_list,file_path):
     file_handle=file(file_path,'a')
     for item in data_list:
@@ -173,31 +287,36 @@ def csv_printer(data_list,file_path):
 ## This collects the desired number of characters to be collected for further analysis
 ## That way I can search for a string and if I don't find it, it doesn't have to go through
 ## The entire page text and maybe find an instance I don't want or something.
-    
 def get_raw_chars(page_text,data_flag,flag_inst,direction,num_chars):
     try:
         if direction==RIGHT:
+            ## If going to the right find flag, and make start index right after the last char of the flag
             start_index=get_index(page_text,data_flag,flag_inst,RIGHT)+len(data_flag)
+            ## Get end_index be adding 
             end_index=start_index+num_chars
             raw_text=page_text[start_index:end_index].strip()
         elif direction==LEFT:
+            ## if left, just find the index of the flag
             end_index=get_index(page_text,data_flag,flag_inst,LEFT)
+            ## And subtract to get the right character range
             start_index=end_index-num_chars-len(data_flag)
             raw_text=page_text[start_index:end_index].strip()
     except:
+        ## :(
         raw_text="FLAG NOT FOUND"
     return raw_text
 
+
 ## ----------------- extraction functions for every case--------(yeah right)
+## This section tries to cover every way you would possible want to go from one string
+## to another. by number of characters, by spaces, by a certain string, and it
+## also tries to let you collect only the characters you want, numbers, letters, other, combinations
 
 ## This takes the a library entry and some text and looks for a specific string
 ## which it uses as a flag to stop collecting
 def stop_key_string(lib_entry,raw_text):
-    #direction = lib_entry[4]
     direction = lib_entry['direction']
-    #stop_key = lib_entry[7]
     stop_key = lib_entry['collection_parameter_1']
-    #stop_inst = lib_entry[8]
     stop_inst = lib_entry['collection_parameter_2']
     if direction==RIGHT:
         end_index=get_index(raw_text,stop_key,stop_inst,RIGHT)
@@ -215,33 +334,24 @@ def stop_key_string(lib_entry,raw_text):
 ## I can't figure out any other way to extract something and it happens to be a
 ## consistent length
 def stop_key_number_of_chars(lib_entry,raw_text):
-    #direction = lib_entry[4]
     direction = lib_entry['direction']
-    #stop_key = lib_entry[7]
     stop_key = lib_entry['collection_parameter_1']
-    #stop_inst = lib_entry[8]
     stop_inst = lib_entry['collection_parameter_2']
-    
     if direction==RIGHT:
         end_index=stop_key
         refined_text=raw_text[:end_index].strip()
     else:
         start_index=len(raw_text)-stop_key
         refined_text=raw_text[start_index:].strip()
-
     return refined_text
 
 ## This collects "words". I can say I want to collect that group of
 ## characters seperated by spaces on both sides that is x number of
 ## "words" away from the beginning/end of the raw text string
 def stop_key_space_delimited(lib_entry, raw_text):
-    #direction = lib_entry[4]
     direction = lib_entry['direction']
-    #stop_key = lib_entry[7]
     stop_key = lib_entry['collection_parameter_1']
-    #stop_inst = lib_entry[8]
     stop_inst = lib_entry['collection_parameter_2']
-
     if direction==RIGHT:
         start_index=get_index(" "+raw_text," ",stop_key,RIGHT)
         end_index=get_index(" "+raw_text," ",stop_inst,RIGHT)
@@ -249,8 +359,7 @@ def stop_key_space_delimited(lib_entry, raw_text):
     else:
         start_index=get_index(raw_text," ",stop_key,LEFT)
         end_index=get_index(raw_text," ",stop_inst,LEFT)
-        refined_text=raw_text[start_index:end_index].strip()
-        
+        refined_text=raw_text[start_index:end_index].strip()  
     return refined_text
 
 ## This takes a string and misleadingly, will collect only the characters
@@ -258,16 +367,11 @@ def stop_key_space_delimited(lib_entry, raw_text):
 ## with a specified buffer. Meaning that if it fails to find a character in
 ## the list after x characters it will stop collecting.
 def stop_key_numbers_with_buffer(lib_entry, raw_text, character_list):
-    #direction = lib_entry[4]
     direction = lib_entry['direction']
-    #stop_key = lib_entry[7]
     stop_key = lib_entry['collection_parameter_1']
-    #stop_inst = lib_entry[8]
     stop_inst = lib_entry['collection_parameter_2']
-    
     collection_string=""
     buffer_length=stop_key
-    
     if direction==RIGHT:
         i=0
         while (buffer_length>0 and i<len(raw_text)):
@@ -284,9 +388,7 @@ def stop_key_numbers_with_buffer(lib_entry, raw_text, character_list):
             else:
                 buffer_length=buffer_length-1
             i=i+1
-
         refined_text=collection_string.strip()
-        
     else:
         i=len(raw_text)
         while (buffer_length>0 and i>0):
@@ -303,7 +405,6 @@ def stop_key_numbers_with_buffer(lib_entry, raw_text, character_list):
             else:
                 buffer_length=buffer_length-1
             i=i-1
-
         refined_text=collection_string.strip()
     return refined_text
 
@@ -316,19 +417,13 @@ def stop_key_keyword_include(lib_entry, raw_text):
     refined_text=stop_key_string(lib_entry,raw_text)+" "+lib_entry['data_flag']#lib_entry[2]
     return refined_text
 
-## This gets a groupd of chars from the space method and then refines the chars
+## This gets a group of chars from the space method and then refines the chars
 ## based on a character list using the buffer method
 ## I should really add the refine case as on option to the library so I can do
 ## it to any refined text as one last refinment step.
 ## But I was too lazy to do it at the time of this writing.
 def stop_key_space_delimited_refine_chars(lib_entry, raw_text, character_list, buffer_length):
     refined_text_inter=stop_key_space_delimited(lib_entry, raw_text)
-####    lib_entry_copy=[]
-####    for item in lib_entry:
-####        lib_entry_copy.append(item)
-####    lib_entry_copy[7]=buffer_length
-####    lib_entry_copy[8]=1
-####    lib_entry_copy[4]=RIGHT
     import copy
     lib_entry_copy=copy.deepcopy(lib_entry)
     lib_entry_copy['collection_parameter_1']=buffer_length
@@ -348,23 +443,23 @@ def stop_key_default(lib_entry, raw_text):
 ## This function uses the library and the functions above to get the desired data
 ## found in the vicinity of each keyword. It is a huge if else if statement
 def refined_extract(refined_lib,page_text):
-
-    #raw_text_list=[]
+    ## Actually a dict
     raw_text_list={}
 
 ## The raw text has to be put into a dict
 ## And the refined text should also be put into a dict.
-    
-    ## go through all of the entries in refined lib because it's what you need to get
-    ## to do the utility analysis
+
+    ## Let the user know whats coming
+    print "----------------------------------------------------------------------"
+    print "COLLECTIN/PRINTING RAW TEXT"
+    print "----------------------------------------------------------------------"
+
+    #Get the collection order from the utility library and collect text for each item.
     for item in refined_lib['library_info']['collection_order']:
+        ## entry will be a dict containing the instruction for item
         entry=refined_lib['extraction_parameters'][item]
-        print item
-        #if collection type is 0 then: (Collection type denotes wether you need to get a new string
-        # or use already collected values (like summing two values)
 
-        ##coll_type,data_type,data_flag,flag_inst,direction,num_chars,stop_mthd,stop_key,stop_inst,fin_tab=entry[:]
-
+        ## A bunch of declarations to pull the data out of the dict
         coll_type=entry['collection_method']
         #data_type=entry['']
         data_flag=entry['data_flag']
@@ -376,45 +471,37 @@ def refined_extract(refined_lib,page_text):
         stop_inst=entry['collection_parameter_2']
         fin_tab=entry['collection_type']
         
-        #This gets a number of characters near the flag to make analysis easier
+        ## Call get_raw_chars to get characters in the vicinity of the flag to make
+        ## Analysis easier/ more reliable.
         raw_text=get_raw_chars(page_text,data_flag,flag_inst,direction,num_chars)
-        ## put all the raw text into a list
-        #raw_text_list.append(raw_text)
+
+        ## Add all the results to a raw_text_dict, that way, the raw text can be called on
+        ## Using the "Heading order" info from the utility library
         raw_text_list[item]=raw_text
-    for item in raw_text_list.itervalues(): print item
 
-    print "----------------------------------------------------------------------"
-    print "PRINTING RAW TEXT"
-    print "----------------------------------------------------------------------"
-    
-    for key in refined_lib['library_info']['collection_order']:
-        print key+": "+raw_text_list[key]
-    #key, value in raw_text_list.iteritems(): print key+": "+raw_text_list[i]
+        print item+": "+raw_text_list[item]
 
-    #print "LENGTH OF RAW TEXT LIST: "+str(len(raw_text_list))
+    ## This is just to show the user some progress. 
+    ##for item in raw_text_list.itervalues(): print item
 
-    print "----------------------------------------------------------------------"
-    print "GETTING REFINED DATA"
-    print "----------------------------------------------------------------------"
+##    ## Let user know what's coming
+##    print "----------------------------------------------------------------------"
+##    print "GETTING REFINED DATA"
+##    print "----------------------------------------------------------------------"
 
     refined_text_list={}
-    ##for i in range(len(raw_text_list)):
-    for key in refined_lib['library_info']['collection_order']:#.iterkeys():
-        #print i
-        print key
-        #print refined_lib[key]
+    for key in refined_lib['library_info']['collection_order']:
+
         if refined_lib['extraction_parameters'][key]['collection_method']=="number-of-chars":
             #print "Keyword matched, using number-of-chars method to retrieve data"
             refined_text=stop_key_number_of_chars(refined_lib['extraction_parameters'][key],raw_text_list[key])
             #print refined_text
-            #refined_text_list.append(refined_text)
             refined_text_list[key]=refined_text
             
         elif refined_lib['extraction_parameters'][key]['collection_method']=="keyword":
             #print "Keyword matched, using keyword method to retrieve data"
             refined_text=stop_key_string(refined_lib['extraction_parameters'][key],raw_text_list[key])
             #print refined_text
-            #refined_text_list.append(refined_text)
             refined_text_list[key]=refined_text
             
         elif refined_lib['extraction_parameters'][key]['collection_method']=="space-delimited":
@@ -452,100 +539,146 @@ def refined_extract(refined_lib,page_text):
             #refined_text_list.append(raw_text_list[i])
             refined_text_list[key]=refined_text
 
+    ##Let user know what's coming
     print "----------------------------------------------------------------------"
-    print "PRINTING REFINED TEXT"
+    print "COLLECTING/PRINTING REFINED TEXT"
     print "----------------------------------------------------------------------"
     for key in refined_lib['library_info']['heading_order']:
         print key+": "+refined_text_list[key]
 
-    #for i in range(len(refined_text_list)): print str(i+1)+": "+ refined_text_list[i]
-
     return refined_text_list
 
+def get_document_list(doc_list):
+    page_list=[]
+    document_list=[]
+    for i in range(0,len(lines),2):
+        page_list.append(lines[i].rstrip('\n'))
+        page_list.append(lines[i+1].rstrip('\n'))
+        document_list.append(page_list)
+        page_list=[]
+    return document_list
+
+def extract_information(library,document_list):
+    refined_results=[]
+    for i in range(len(document_list)):
+        raw_text=document_list[i][1]
+        result=refined_extract(library, raw_text)   
+        refined_results.append(result)
+    return refined_results
 
 ###--------------------------------------------------------------------------------------------
 ###--------START OF PROGRAM---------------------------------------------------------------
-######import os
-######import useful
-######
-#######Prompt User for text file
-######default_directory="C:\Users\James McGlynn\My Programs\Python Programs\pdf2txt\WorkRelated\Castle"
-######text_file=useful.getPath(default_directory)
-######
-######## Open the text file and put every line in a list
-######with open(text_file,'r') as fh:
-######    lines=fh.readlines()
-######
-######## Because of the way the document was created, I only want every other line
-######page_list=[]
-######document_list=[]
-######for i in range(0,len(lines),2):
-######    page_list.append(lines[i].rstrip('\n'))
-######    page_list.append(lines[i+1].rstrip('\n'))
-######    document_list.append(page_list)
-######    page_list=[]
-######
-######
-######
-######## The collection process
-######refined_results=[]
-######for i in range(len(document_list)):
-######    raw_text=document_list[i][1]
-######    result=refined_extract(refined_Castle_Lib, raw_text)   
-######    refined_results.append(result)
-######
-######    print refined_results
-######
-######
-######## write refined lib to an excel file
-######book_name='Castle Oil.xlsx'
-######from openpyxl import Workbook
-######from openpyxl import load_workbook
-######try:
-######    wb=load_workbook(book_name)
-######except:
-######    wb = Workbook()
-######    #ws=wb.get_active_sheet()
-######
-######match=0
-######for entry in refined_results:
-######    
-######    sheet_names=wb.get_sheet_names()
-######    #print sheet_names
-######    for item in sheet_names:
-######        #print entry[1]
-######        if entry['account number']==item:
-######            match=1
-######        else:
-######            pass
-######    if match==1:
-######        ws=wb.get_sheet_by_name(entry['account number'])
-######        last_occ_row=ws.rows[-1][0].row
-######        #row=last_occ_row
-######        #col=0
-######        i=0
-######        for key in refined_Castle_Lib['library_info']['heading_order']:
-######            c=ws.cell(row=last_occ_row, column=i)
-######            c.value=entry[key]
-######            i=i+1
-######    else:
-######        newSheet=wb.create_sheet()
-######        newSheet.title = str(entry['account number'])
-######        i=0
-######        for key in refined_Castle_Lib['library_info']['heading_order']:
-######            c=newSheet.cell(row=0, column=i)
-######            d=newSheet.cell(row=1, column=i)
-######            c.value=key
-######            d.value=entry[key]
-######            i=i+1
-######    match=0
-######        
-######
-######wb.save('Castle Oil.xlsx')
+import os
+import useful
+
+## Testing directory
+default_directory="C:\Users\James McGlynn\My Programs\Python Programs\pdf2txt\WorkRelated"
+
+## Choose library here
+library=refined_ConEd_Lib
+
+## Have user navigate to text file
+text_file=useful.getPath(default_directory)
+
+## Open the text file and put every line in a list
+with open(text_file,'r') as fh:
+    lines=fh.readlines()
+    
+## Pull every other line from the list (That's just how I made the document)
+document_list=get_document_list(lines)
+
+## Use the library and the text to try and get the data you want
+refined_results=extract_information(library, document_list)
 
 
+def print_by_account_number(library,refined_results,text_file):
+
+    ## Openpyxl library imports
+    from openpyxl import Workbook
+    from openpyxl import load_workbook
+
+    ## Get the excel filename from the name of the text file that the user navigated to
+    book_name=useful.getFilenameFromPath(text_file)+'.xlsx'
+
+    try: ## Try opening the workbook with the same name"
+        wb=load_workbook(book_name)
+    except: ## If it doesn't exist then start a new workbook in memory
+        wb = Workbook()
+
+    ## This match business is to try and sort the gathered data by account number, but the account numbers
+    ## aren't really reliable enough, so I think I'm going to stop doing this for now. 
+    match=0
+    for entry in refined_results:
+        
+        sheet_names=wb.get_sheet_names()
+        for item in sheet_names:
+            if entry['Account Number']==item:
+                match=1
+            else:
+                pass
+        if match==1:
+            ws=wb.get_sheet_by_name(entry['Account Number'])
+            last_occ_row=ws.rows[-1][0].row
+            i=0
+            for key in library['library_info']['heading_order']:
+                c=ws.cell(row=last_occ_row, column=i)
+                c.value=entry[key]
+                i=i+1
+        else:
+            newSheet=wb.create_sheet()
+            newSheet.title = str(entry['Account Number'])
+            i=0
+            for key in library['library_info']['heading_order']:
+                c=newSheet.cell(row=0, column=i)
+                d=newSheet.cell(row=1, column=i)
+                c.value=key
+                d.value=entry[key]
+                i=i+1
+        match=0
+            
+    wb.save(book_name)
+    return book_name
+
+def print_by_none(library,refined_results,text_file):
+
+    ## Openpyxl library imports
+    from openpyxl import Workbook
+    from openpyxl import load_workbook
+
+    ## Get the excel filename from the name of the text file that the user navigated to
+    book_name=useful.getFilenameFromPath(text_file)+'.xlsx'
+
+    try: ## Try opening the workbook with the same name"
+        wb=load_workbook(book_name)
+        new_wb=-1
+        ws = wb.get_active_sheet()
+        
+    except: ## If it doesn't exist then start a new workbook in memory
+        wb = Workbook()
+        ws = wb.get_active_sheet()
+        new_wb=1
+        i=0
+        for key in library['library_info']['heading_order']:
+            c=ws.cell(row=0, column=i)
+            c.value=key
+            i=i+1
+    
+    for entry in refined_results:
+    
+        last_occ_row=ws.rows[-1][0].row
+
+        i=0
+        for key in library['library_info']['heading_order']:
+            c=ws.cell(row=last_occ_row, column=i)
+            c.value=entry[key]
+            i=i+1
+            
+    wb.save(book_name)
+    return book_name
 
 
+excel_output_file=print_by_none(library, refined_results, text_file)
+print 'done!'
 
 
 

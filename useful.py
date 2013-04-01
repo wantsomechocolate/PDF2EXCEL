@@ -11,3 +11,7 @@ def getPath(default_directory):
     os.chdir(origDir)
     return filePath
     ## This returns a full path - not a filename
+
+def getFilenameFromPath(path):
+    filename=path[path.rindex('/')+1:path.rindex('.')]
+    return filename

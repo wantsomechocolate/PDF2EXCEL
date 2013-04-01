@@ -17,7 +17,7 @@ import cv2.cv as cv
 import Tkinter, tkFileDialog
 
 ## Import the extraction stuff
-import extraction
+import extraction_module as extraction
 
 import useful
 
@@ -36,6 +36,7 @@ def getNumPages(inputFile):
 ##  Takes a pdf, the page to scale and a zoom factor to scale by and
 ##  returns the path to a new pdf document that is scaled by the scale factor
 def scalePDF(inputFile,pageNumber,zoomFactor):
+    print "entered scalepdf"
     #print "SCALING PDF TO INCREASE IMAGE QUALITY FOR TESSERACT"
     #print "---------------------------------------------------"
     #Proper indexing
@@ -72,6 +73,7 @@ def scalePDF(inputFile,pageNumber,zoomFactor):
 ##  Takes a path to a (scaled) pdf and saves it as an image.
 ##  Then it returns the image path
 def pdf2img(pdf_path):
+    print "entered pdf2img"
     #print "CONVERTING SCALED PDF TO AN IMAGE"
     #print "---------------------------------------------------"
     img = Image(filename=pdf_path)
@@ -85,11 +87,16 @@ def pdf2img(pdf_path):
 
 ##  Takes the image path and uses tess to return a string
 def img2txt(image_path):
+    print "entered img2txt"
     #print "CONVERTING IMAGE TO TEXT"
     #print "---------------------------------------------------"
     image=cv.LoadImage(image_path, cv.CV_LOAD_IMAGE_GRAYSCALE)
+    print "set image"
     tesseract.SetCvImage(image,api)
+    print "did the tesseract thing"
     text=api.GetUTF8Text()
+    print "actually got the text"
+    conf=api.MeanTextConf()
     ##  Remove every '\n' PUT IN BY TESS and put everything back together with a space!    
     page_text=" ".join(text.splitlines())
     #print "Text for " + image_path + " : " + text
@@ -111,6 +118,7 @@ def img2txt(image_path):
 
 ## This takes a 
 def printOutput1(word_list,target_pdf,i):
+    print "entered printoutput1"
     outputFile=target_pdf[:target_pdf.rindex('.')]+' Text Output.txt'
     filehandle=file(outputFile,'a')
     filehandle.write("TEXT FOR PAGE "+str(i))
@@ -139,6 +147,8 @@ api.SetOutputName("outputName");
 api.Init(".","eng",tesseract.OEM_DEFAULT)
 api.SetPageSegMode(tesseract.PSM_AUTO)
 
+print "made tess decs"
+
 ## Other Initializations 
 page_num = 1        #Initial Page Number
 scale_factor = 4    #Each page of each PDF gets magnified by this
@@ -153,7 +163,7 @@ print "THE NUMBER OF PAGES IN THE PDF IS: "+str(num_pages)
 scaled_pdf, converted_image, word_list=[],[],[]
 
 for i in range(num_pages):
-
+    print "page" + str(i)
 #---Get data for each page---
 
     #First scale the PDF so that tess can read it better
