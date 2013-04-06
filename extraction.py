@@ -5,118 +5,22 @@
 RIGHT=1
 LEFT=-1
 
+#imports 
+import re
+
 ## This is the extraction library - it is particular to a utility. Maybe even more particular than that. 
 ## This library will eventually go into a text file or database type thing if I'm feeling up to it. 
-
-#Library info is for the order that things get collected and printed and some other info
-refined_Castle_Lib ={'library_info':{ 
-
-                        'utility':'Castle Oil',
-                        'collection_order':('account number','address','delivery date','fuel oil type',
-                                            'gallons','total-discount','discount','base price'),
-                        'heading_order':('address','account number','base price','discount','total-discount',
-                                         'fuel oil type','delivery date','gallons')},
-#Extraction parameters contains instructions for collecting each peice of data
-		    'extraction_parameters':{ 
-
-                        'address':{
-                                'data_flag'                : 'RE:',
-                                'data_flag_inst'           : 1,
-                                'direction'                : RIGHT,
-                                'raw_char_collect'         : 40,
-                                'collection_method'        : 'keyword',
-                                'collection_parameter_1'   : '(',
-                                'collection_parameter_2'   : 1,
-                                'include_in_final'         : 'NO',
-                                'collection_type'          : 0},
-
-                        'account number':{
-                                'data_flag'                : 'ACCOUNT',
-                                'data_flag_inst'           : 1,
-                                'direction'                : RIGHT,
-                                'raw_char_collect'         : 30,
-                                'collection_method'        : 'space-delimited',
-                                'collection_parameter_1'   : 1,
-                                'collection_parameter_2'   : 2,
-                                'include_in_final'         : 'NO',
-                                'collection_type'          : 0},
-
-                        'gallons':{
-                                'data_flag'                : 'P.B.T.',
-                                'data_flag_inst'           : 1,
-                                'direction'                : LEFT,
-                                'raw_char_collect'         : 30,
-                                'collection_method'        : 'space-delimited',
-                                'collection_parameter_1'   : 2,
-                                'collection_parameter_2'   : 1,
-                                'include_in_final'         : 'YES',
-                                'collection_type'          : 0},
-
-                        'discount':{
-                                'data_flag'                : 'COUNT =',
-                                'data_flag_inst'           : 1,
-                                'direction'                : RIGHT,
-                                'raw_char_collect'         : 30,
-                                'collection_method'        : 'numbers-with-buffer-decimal-number',
-                                'collection_parameter_1'   : 3,
-                                'collection_parameter_2'   : 1,
-                                'include_in_final'         : 'NO',
-                                'collection_type'          : 0},
-
-                        'total-discount':{
-                                'data_flag'                : 'PAY ONLY',
-                                'data_flag_inst'           : 1,
-                                'direction'                : RIGHT,
-                                'raw_char_collect'         : 30,
-                                'collection_method'        : 'numbers-with-buffer-decimal-number',
-                                'collection_parameter_1'   : 3,
-                                'collection_parameter_2'   : 1,
-                                'include_in_final'         : 'NO',
-                                'collection_type'          : 0},
-
-                        'delivery date':{
-                                'data_flag'                : 'AMOUNT',
-                                'data_flag_inst'           : 1,
-                                'direction'                : RIGHT,
-                                'raw_char_collect'         : 30,
-                                'collection_method'        : 'numbers-with-buffer-date',
-                                'collection_parameter_1'   : 2,
-                                'collection_parameter_2'   : 1,
-                                'include_in_final'         : 'YES',
-                                'collection_type'          : 0},
-
-                        'fuel oil type':{
-                                'data_flag'                : 'FUEL OIL',
-                                'data_flag_inst'           : 1,
-                                'direction'                : LEFT,
-                                'raw_char_collect'         : 5,
-                                'collection_method'        : 'keyword-include',
-                                'collection_parameter_1'   : '#',
-                                'collection_parameter_2'   : 1,
-                                'include_in_final'         : 'YES',
-                                'collection_type'          : 0},
-
-                        'base price':{
-                                'data_flag'                : 'P.B.T.',
-                                'data_flag_inst'           : 1,
-                                'direction'                : LEFT,
-                                'raw_char_collect'         : 30,
-                                'collection_method'        : 'space-delimited-refine-chars',
-                                'collection_parameter_1'   : 1,
-                                'collection_parameter_2'   : 0,
-                                'include_in_final'         : 'NO',
-                                'collection_type'          : 0}}}
-                            
 
 refined_ConEd_Lib ={'library_info':{ 
 
                         'utility':'Consolidated Edison',
-                        'collection_order':('Name','Account Number','Rate Structure','G&T Demand1',
-                                            'G&T Demand2','Primary Demand1','Primary Demand2','Secondary Demand1',
-											'Secondary Demand2','Date'),
-                        'heading_order':('Name','Account Number','Rate Structure','Date','G&T Demand1',
-											'G&T Demand2','Primary Demand1','Primary Demand2','Secondary Demand1',
-											'Secondary Demand2')},
+                        
+                        'collection_order':('Name','Account Number','Rate Structure','G&T Demand',
+                                            'G&T Demand2','Primary Demand1','Primary Demand2','Secondary Demand1','Secondary Demand2','Date'),
+                        
+                        'heading_order':('Name','Account Number','Rate Structure','Date','G&T Demand',
+					'G&T Demand2','Primary Demand1','Primary Demand2','Secondary Demand1','Secondary Demand2')},
+                    
 #Extraction parameters contains instructions for collecting each peice of data
 		    'extraction_parameters':{ 
 
@@ -135,7 +39,7 @@ refined_ConEd_Lib ={'library_info':{
                                 'data_flag'                : 'Account number:',
                                 'data_flag_inst'           : 1,
                                 'direction'                : RIGHT,
-                                'raw_char_collect'         : 30,
+                                'raw_char_collect'         : 40,
                                 'collection_method'        : 'keyword',
                                 'collection_parameter_1'   : "Billing",
                                 'collection_parameter_2'   : 1,
@@ -165,7 +69,7 @@ refined_ConEd_Lib ={'library_info':{
                                 'collection_type'          : 0},
 								
 			'G&T Demand1':{
-                                'data_flag'                : 'G &T',
+                                'data_flag'                : """G[^&]{0,2}&[^T]{0,2}T""",
                                 'data_flag_inst'           : 1,
                                 'direction'                : RIGHT,
                                 'raw_char_collect'         : 30,
@@ -176,7 +80,7 @@ refined_ConEd_Lib ={'library_info':{
                                 'collection_type'          : 0},	
 								
 			'G&T Demand2':{
-                                'data_flag'                : 'G & T',
+                                'data_flag'                : """G[^&]{0,2}&[^T]{0,2}T""",
                                 'data_flag_inst'           : 1,
                                 'direction'                : RIGHT,
                                 'raw_char_collect'         : 30,
@@ -237,7 +141,7 @@ refined_ConEd_Lib ={'library_info':{
 ##,[1,"Cost","ADD","Total-Discount","Total-Discount"])
 
 ## Character Lists for Certain types of collection methods - I want to change the names of these.
-## The no longer pertain to just one collection method. 
+## They no longer pertain to just one collection method. 
 numbers_with_buffer_decimal_number=(',','.','1','2','3','4','5','6','7','8','9','0')
 numbers_with_buffer_date=('/','|','1','2','3','4','5','6','7','8','9','0')
 
@@ -247,8 +151,17 @@ def get_index(text,flag,inst,direc):
     if direc==RIGHT:                ## If the direction is the right
         char_index=-1               ## Then you can start at the beginning of the text
         for i in range(inst):       ## Do this once for every instance (Probably a slow way to do this)
-            try:                    ## See if you can find the desired string  
+            try:                    ## See if you can find the desired string
+                #match=re.match(flag,text[(char_index+1):]).group()
+                #print match
                 char_index=text.index(flag,char_index+1)  ## if you can, get the index
+
+                try:
+                    match=re.search(flag,text)
+                    print match.group()
+                except:
+                    print "no match"
+     
             except:   
                 char_index="Instance Not Found"     ## if you can't, make char_index a string
                 
