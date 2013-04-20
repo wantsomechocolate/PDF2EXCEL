@@ -15,10 +15,10 @@ refined_ConEd_Lib ={'library_info':{
 
                         'utility':'Consolidated Edison',
                         
-                        'collection_order':('Name','Account Number','Rate Structure','G&T Demand',
+                        'collection_order':('Name','Account Number','Rate Structure','G&T Demand1',
                                             'G&T Demand2','Primary Demand1','Primary Demand2','Secondary Demand1','Secondary Demand2','Date'),
                         
-                        'heading_order':('Name','Account Number','Rate Structure','Date','G&T Demand',
+                        'heading_order':('Name','Account Number','Rate Structure','Date','G&T Demand1',
 					'G&T Demand2','Primary Demand1','Primary Demand2','Secondary Demand1','Secondary Demand2')},
                     
 #Extraction parameters contains instructions for collecting each peice of data
@@ -50,7 +50,7 @@ refined_ConEd_Lib ={'library_info':{
                                 'data_flag'                : 'Rate:',
                                 'data_flag_inst'           : 1,
                                 'direction'                : RIGHT,
-                                'raw_char_collect'         : 30,
+                                'raw_char_collect'         : 50,
                                 'collection_method'        : 'keyword',
                                 'collection_parameter_1'   : 'We me',
                                 'collection_parameter_2'   : 1,
@@ -61,7 +61,7 @@ refined_ConEd_Lib ={'library_info':{
                                 'data_flag'                : 'from',
                                 'data_flag_inst'           : 1,
                                 'direction'                : RIGHT,
-                                'raw_char_collect'         : 30,
+                                'raw_char_collect'         : 40,
                                 'collection_method'        : 'keyword',
                                 'collection_parameter_1'   : 'Rate',
                                 'collection_parameter_2'   : 1,
@@ -73,7 +73,7 @@ refined_ConEd_Lib ={'library_info':{
                                 'data_flag_inst'           : 1,
                                 'direction'                : RIGHT,
                                 'raw_char_collect'         : 30,
-                                'collection_method'        : 'numbers-with-buffer',
+                                'collection_method'        : 'numbers-with-buffer-decimal-number',
                                 'collection_parameter_1'   : 1,
                                 'collection_parameter_2'   : 2,
                                 'include_in_final'         : 'YES',
@@ -84,8 +84,8 @@ refined_ConEd_Lib ={'library_info':{
                                 'data_flag_inst'           : 1,
                                 'direction'                : RIGHT,
                                 'raw_char_collect'         : 30,
-                                'collection_method'        : 'numbers-with-buffer',
-                                'collection_parameter_1'   : 'k',
+                                'collection_method'        : 'numbers-with-buffer-decimal-number',
+                                'collection_parameter_1'   : 2,
                                 'collection_parameter_2'   : 1,
                                 'include_in_final'         : 'YES',
                                 'collection_type'          : 0},	

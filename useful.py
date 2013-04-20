@@ -1,5 +1,6 @@
 import os
 import Tkinter, tkFileDialog
+import re
 
 def getPath(default_directory):
     origDir=os.getcwd()
@@ -8,10 +9,68 @@ def getPath(default_directory):
     root.withdraw()                             ##  withdraw it!
     filePath=tkFileDialog.askopenfilename()     ##  imageFile will store the filename of the image you choose   
     root.destroy()                              ##  Some overkill
-    os.chdir(origDir)
+    os.chdir(origDir)                           ##  Change dir back for net zero change
     return filePath
     ## This returns a full path - not a filename
 
 def getFilenameFromPath(path):
     filename=path[path.rindex('/')+1:path.rindex('.')]
     return filename
+
+
+def get_index_and_match(text,regex,inst):
+
+    ## Dictionary Keys
+    dict_key_index='index'
+    dict_key_match='match'
+    ## Error messages
+    no_match_message='NO MATCHES'
+    inst_not_found_message='INSTANCE NOT FOUND'
+    ## Variable Declarations
+    char_index=-1
+    match_list=[]
+    regex_finds_match=True
+
+    ## Keep trying to match regex until failure
+    while regex_finds_match==True:
+        try:
+            ## If it can't find a match, or the regex is bad,
+            ## the message will be NO MATCHES
+            match=re.search(regex,text[(char_index+1):]).group() 
+            char_index=text.index(match,char_index+1)
+            match_list.append((char_index,match))
+            
+        except:
+            ## The first time it can't find a match, exit the loop
+            regex_finds_match=False
+
+    ## If it found no matches at all, say so. 
+    if len(match_list)==0:
+        return {dict_key_index:no_match_message, dict_key_match:no_match_message}
+    ## If it did find some
+    else:
+        ## Try applying the desired instance 
+        try:
+            ## If you can great
+            char_index=match_list[inst-1][0]
+            match=match_list[inst-1][1]
+            return {dict_key_index:char_index, dict_key_match:match}
+        except:
+            ## If you can, say that it found at least one match, but the instance
+            ## You wanted wasn't found
+            return {dict_key_index:inst_not_found_message, dict_key_match:inst_not_found_message}
+    
+        #####Sample code to test get_index_and_match
+        ####sample_text1="aaaasdfaaaasclfaaaasdfaaaasdf"
+        ####sample_text2="aaasdffhjdkhkjfls"
+        ####sample_regex='as[cd]l?f'
+        ####flag_index=get_index_and_match(sample_text1,sample_regex,5)
+        ####print flag_index
+
+
+
+
+
+
+
+    
