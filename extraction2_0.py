@@ -1,3 +1,11 @@
+## Next step is to refine the refinement process
+## don't forget to tailer the char lists and trans
+## don't forget to clip off leading and traling white space.
+## How to handle really special cases
+
+
+
+
 ## Imports
 import useful
 import ast
@@ -22,7 +30,7 @@ def get_current_utility():
 
 
 ## This takes a location and outputs a list with a page of text at each entry
-## In the string
+## In the list
 def get_document_list(text_file):
     #text_file=useful.getPath(document_list_location)
     with open(text_file,'r') as fh:
@@ -100,47 +108,148 @@ def get_raw_chars(page_text,library_entry):
             start_index=index_and_match['index']
             end_index=index_and_match['index']
             raw_text=index_and_match['index']
-    return raw_text
+    return {'raw_text':raw_text,'match':index_and_match['match']}
 
-def print_to_workbook(library,refined_results,text_file,tab_type):
 
+def get_ref_text(raw_text_string,library_entry):
+    ## The idea is to take the raw chars and the instructions and get the data
+    ## The raw text function gets one peice of info at a time it looks like.
+    ## So this should do the same.
+    collection_method=library_entry['collection_method']
+    left_bound_regex=library_entry['left_bound_regex']
+    right_bound_regex=library_entry['right_bound_regex']
+    data_regex=library_entry['data_regex']
+    character_list=library_entry['character_list']
+    character_trans=library_entry['character_trans']
+
+
+    if raw_text=="NO MATCHES":
+        return "No Raw Text"
+    elif raw_text=="INSTANCE NOT FOUND":
+        return "No Raw Text"
+
+    elif collection_method=='bounds':
+        if left_bound_regex=="null":
+            start_index=0
+            #print "Got to left bound if"
+        else:
+            index_and_match=useful.get_index_and_match(raw_text_string,left_bound_regex,1)
+            try:
+                start_index=index_and_match['index']+len(index_and_match['match'])
+            except:
+                start_index=index_and_match['index']
+            #print start_index
+
+        if right_bound_regex=="null":
+            end_index=len(raw_text)
+            #print "Got to right bound if"
+        else:
+            #print "raw_text_string: "+ raw_text_string
+            #print right_bound_regex
+            #print "right_bound_regex: "+right_bound_regex
+            index_and_match=useful.get_index_and_match(raw_text_string,right_bound_regex,1)
+            end_index=index_and_match['index']
+            #print end_index
+    elif collection_method=='data':
+        index_and_match=useful.get_index_and_match(raw_text_string,data_regex,1)
+        start_index=index_and_match['index']
+        try:
+            end_index=len(index_and_match['match'])+start_index
+        except:
+            end_index=len(raw_text)
+
+    try:        
+        ref_text=raw_text[start_index:end_index]
+        
+    except:
+        ref_text="Bad Raw Text"
+
+    if ref_text=="Bad Raw Text":
+        pass
+    elif ref_text=="No Raw Text":
+        pass
+    else:
+        if character_list != "none":
+            ref_text=useful.character_selection(ref_text,character_list)
+            print ref_text
+        if character_trans != "none":
+            ref_text=useful.character_transform(ref_text,character_trans)
+            print ref_text
+        
+
+    #print ref_text
+    return ref_text
+
+#### this is taking a string(denoting the util_library), a dictionary (of what is to be printed)
+#### a file path to make the xlsx file from, and a flag so you know what type of data you have?
+##book_name=print_to_workbook(utility_library,raw_text_dict,ocr_text_path,"raw_text")
+
+def print_to_workbook(data_order_list,dict_to_print,source_path,tab_name):
+    
     ## Openpyxl library imports
     from openpyxl import Workbook
     from openpyxl import load_workbook
 
     ## Get the excel filename from the name of the text file that the user navigated to
-    book_name=useful.getFilenameFromPath(text_file)+'.xlsx'
+    book_name=source_path[:source_path.rindex('.')]+'.xlsx'#useful.getFilenameFromPath(source_path)+'.xlsx'
+    #print "the book name is " + str(book_name)
 
     try: ## Try opening the workbook with the same name"
         wb=load_workbook(book_name)
+        #print "Found workbook"
         new_wb=-1
-        ws = wb.get_active_sheet()
+        try:
+            ws = wb.get_sheet_by_name(tab_name) #this does not error if it doesn't find what it wants
+            if ws==None:
+                1+"one"#throw error"
+            else:
+                pass
+                #print "Found tab"
+        except:
+            #print "Found workbook, but didn't find tab"
+            ws=wb.create_sheet(-1,tab_name)
+            ws=wb.get_sheet_by_name(tab_name)
+            new_wb=-1
+            i=0
+            for key in data_order_list['library_info']['collection_order']:
+                c=ws.cell(row=0, column=i)
+                c.value=key
+                i=i+1
         
     except: ## If it doesn't exist then start a new workbook in memory
+        #print "Didn't find workbook"
         wb = Workbook()
-        ws = wb.get_active_sheet()
+        ws = wb.create_sheet(-1,tab_name)
+        ws = wb.get_sheet_by_name(tab_name)
         new_wb=1
         i=0
-        for key in library['library_info']['heading_order']:
+        for key in data_order_list['library_info']['collection_order']:
             c=ws.cell(row=0, column=i)
             c.value=key
             i=i+1
     
-    for entry in refined_results:
+    #for entry in dict_to_print:
     
-        last_occ_row=ws.rows[-1][0].row
+    last_occ_row=ws.rows[-1][0].row
+    
 
-        i=0
-        for key in library['library_info']['heading_order']:
-            c=ws.cell(row=last_occ_row, column=i)
-            c.value=entry[key]
-            i=i+1
+    i=0
+    for key in data_order_list['library_info']['collection_order']:
+        #print key
+        c=ws.cell(row=last_occ_row, column=i)
+        try:
+            c.value=dict_to_print[key].strip()
+        except:
+            c.value=dict_to_print[key]
+        i=i+1
             
     wb.save(book_name)
     return book_name
 
-## Ouputs a list of strings - each entry is a page's worth of text.
+## Gets the user to select the document containing the OCR'ed text
 ocr_text_path=useful.getPath(get_default_directory())
+
+## Uses that path to extract the data.
 document_list=get_document_list(ocr_text_path)
 
 ## Retrieves the utility library from the utility dictionary for the specified utility
@@ -151,26 +260,62 @@ utility_library=get_utility_library(get_current_utility(),get_utility_library_di
 #library_entry_sample=utility_library['extraction_parameters']['G&T Demand1']
 #raw_chars=get_raw_chars(document_list[0],library_entry_sample)
 
-
-raw_text_list=[]
+## Collecting the raw characters, but I would also like to collect
+## the flags found by the regular expressions.
+match_dict={}
+raw_text_dict={}
+ref_text_dict={}
+all_results_dict={} ## I might not use this
 for i in range(len(document_list)):
-    print "-----------------------------------------------------------"
-    print "RAW TEXT FOR PAGE: "+str(i+1)
-    print "-----------------------------------------------------------"
+    #print "-----------------------------------------------------------"
+    print "Extracting Raw Text for Page: "+str(i+1)
+    #print "-----------------------------------------------------------"
     for key in utility_library['library_info']['collection_order']:
         #print utility_library['extraction_parameters'][key]
-        raw_chars=get_raw_chars(document_list[i],utility_library['extraction_parameters'][key])
-        print str(key)+": "+str(raw_chars)
-        raw_text_list.append(raw_chars)
+        raw_text_and_match=get_raw_chars(document_list[i],utility_library['extraction_parameters'][key])
+        raw_text=raw_text_and_match['raw_text']
+        match=raw_text_and_match['match']
+        #print str(key)+" : "+str(raw_text)+" : "+str(match)
 
-book_name=print_to_workbook(utility_library,raw_text_list,"condedtest.txt","raw")
+        #This is how the function call would go
+        #print "raw_text: "+raw_text
+        #print "key: "+key
+        ref_text=get_ref_text(raw_text,utility_library['extraction_parameters'][key])
+        ref_text_dict[key]=ref_text
+        
+        raw_text_dict[key]=raw_text
+        match_dict[key]=match
 
+## So far only the raw text, and the matched regular expression are collected
+## To get at them, you again need the collection order list to iterate through them in the
+## proper order
 
-##Printing is next on the agenda
-## It is not working right now. 
+## Now I'm trying to print the two dictionaries to different tabs in the same
+## workbook. Eventually, I also want to print the final results to a third tab.
+## And be able to print whatever I want to a fourth fifth sheet etc.
 
+## this is taking a string(denoting the util_library), a dictionary (of what is to be printed)
+## a file path to make the xlsx file from, and a flag so you know what type of data you have?
 
+    # raw text dict is currently for page of data, not for file of data. 
+    
+    book_name=print_to_workbook(utility_library,raw_text_dict,ocr_text_path,"raw_text")
+    book_name=print_to_workbook(utility_library,ref_text_dict,ocr_text_path,"ref_text")
 
+##match_dict['newkey']='wwhhhhaat'
+##bigger_dict={}
+##bigger_dict['page 1']=match_dict
+##bigger_dict['page 2']={'newerkey':'craziness'}
+##bigger_dict
+##{'page 2': {'newerkey': 'craziness'}, 'page 1': {'newkey': 'wwhhhhaat'}}
+##bigger_dict['page 1']['another key']='un otro key'
+##bigger_dict
+##{'page 2': {'newerkey': 'craziness'}, 'page 1': {'newkey': 'wwhhhhaat', 'another key': 'un otro key'}}
+##bigger_dict['page 3']={}
+##bigger_dict
+##{'page 3': {}, 'page 2': {'newerkey': 'craziness'}, 'page 1': {'newkey': 'wwhhhhaat', 'another key': 'un otro key'}}
+##bigger_dict['page 3']['stuff']=''
+##bigger_dict
 
 
 

@@ -14,9 +14,12 @@ def getPath(default_directory):
     ## This returns a full path - not a filename
 
 def getFilenameFromPath(path):
+
     filename=path[path.rindex('/')+1:path.rindex('.')]
     return filename
 
+##def getPathFromFullFileName(full_filename):
+##    path=full_filename
 
 def get_index_and_match(text,regex,inst):
 
@@ -68,8 +71,57 @@ def get_index_and_match(text,regex,inst):
         ####print flag_index
 
 
+## The function below does not protect against accidentally having a repeat
+## character in the character list.
+def character_selection(string_to_pull_from, list_of_characters):
+    new_string=""
+    matched=0
+    
+    #print "list_of_characters"
+    #print list_of_characters
+    #print "string"
+    #print string_to_pull_from
+
+    string_to_pull_from=unicode(string_to_pull_from,"utf-8")
+
+    #print "string"
+    #print string_to_pull_from
+
+    for char_in_string in string_to_pull_from:
+        matched=0
+        for char_in_list in list_of_characters:
+            #print "char_in_list"
+            #print char_in_list
+            if char_in_string==char_in_list:
+                matched=1
+            else:
+                pass
+        if matched==1:
+            new_string=new_string+str(char_in_string)
+        else:
+            pass
+
+    return new_string            
 
 
+def character_transform(string,dictionary):
+    new_string=""
+    matched=0
+    for char in string:
+        matched=0
+        for key in dictionary.iterkeys():
+            if char==key:
+                matched=1
+                new_string=new_string+str(dictionary[key])
+            else:
+                pass
+
+        if matched==0:
+            new_string=new_string+char
+        else:
+            pass
+                
+    return new_string
 
 
 
