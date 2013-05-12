@@ -1,3 +1,4 @@
+# -*- coding: cp1252 -*-
 ## Next step is to refine the refinement process
 ## don't forget to tailer the char lists and trans
 ## don't forget to clip off leading and traling white space.
@@ -13,6 +14,9 @@ import re
 import os
 RIGHT=1
 LEFT=-1
+
+unicode_chars={"—":"-","‘":"'","’":"'","é":"e",'“':'"'}
+
 
 ## The functions below look useless, but I want it to be easy to flesh them out someday
 ## Like, I won't do anything unless it is in a function
@@ -108,8 +112,24 @@ def get_raw_chars(page_text,library_entry):
             start_index=index_and_match['index']
             end_index=index_and_match['index']
             raw_text=index_and_match['index']
-    return {'raw_text':raw_text,'match':index_and_match['match']}
 
+    raw_text_string_2=""
+    matched=0
+    for char in raw_text:
+        matched=0
+        for key in unicode_chars.iterkeys():
+            if char==key:
+                raw_text_string_2=raw_text_string_2+unicode_chars[key]
+                matched=1
+            else:pass
+            
+        if matched==0:
+            raw_text_string_2=raw_text_string_2+char
+        else:pass
+
+    raw_text=raw_text_string_2    
+            
+    return {'raw_text':raw_text,'match':index_and_match['match']}
 
 def get_ref_text(raw_text_string,library_entry):
     ## The idea is to take the raw chars and the instructions and get the data
@@ -122,44 +142,35 @@ def get_ref_text(raw_text_string,library_entry):
     character_list=library_entry['character_list']
     character_trans=library_entry['character_trans']
 
-
-    if raw_text=="NO MATCHES":
+    if raw_text_string=="NO MATCHES":
         return "No Raw Text"
-    elif raw_text=="INSTANCE NOT FOUND":
+    elif raw_text_string=="INSTANCE NOT FOUND":
         return "No Raw Text"
 
     elif collection_method=='bounds':
         if left_bound_regex=="null":
             start_index=0
-            #print "Got to left bound if"
         else:
             index_and_match=useful.get_index_and_match(raw_text_string,left_bound_regex,1)
             try:
                 start_index=index_and_match['index']+len(index_and_match['match'])
             except:
                 start_index=index_and_match['index']
-            #print start_index
-
         if right_bound_regex=="null":
             end_index=len(raw_text)
-            #print "Got to right bound if"
         else:
-            #print "raw_text_string: "+ raw_text_string
-            #print right_bound_regex
-            #print "right_bound_regex: "+right_bound_regex
             index_and_match=useful.get_index_and_match(raw_text_string,right_bound_regex,1)
             end_index=index_and_match['index']
-            #print end_index
     elif collection_method=='data':
         index_and_match=useful.get_index_and_match(raw_text_string,data_regex,1)
         start_index=index_and_match['index']
         try:
             end_index=len(index_and_match['match'])+start_index
         except:
-            end_index=len(raw_text)
+            end_index=len(raw_text_string)
 
     try:        
-        ref_text=raw_text[start_index:end_index]
+        ref_text=raw_text_string[start_index:end_index]
         
     except:
         ref_text="Bad Raw Text"
@@ -171,13 +182,9 @@ def get_ref_text(raw_text_string,library_entry):
     else:
         if character_list != "none":
             ref_text=useful.character_selection(ref_text,character_list)
-            print ref_text
         if character_trans != "none":
             ref_text=useful.character_transform(ref_text,character_trans)
-            print ref_text
-        
 
-    #print ref_text
     return ref_text
 
 #### this is taking a string(denoting the util_library), a dictionary (of what is to be printed)
@@ -192,21 +199,20 @@ def print_to_workbook(data_order_list,dict_to_print,source_path,tab_name):
 
     ## Get the excel filename from the name of the text file that the user navigated to
     book_name=source_path[:source_path.rindex('.')]+'.xlsx'#useful.getFilenameFromPath(source_path)+'.xlsx'
-    #print "the book name is " + str(book_name)
 
     try: ## Try opening the workbook with the same name"
+        #Found Workbook
         wb=load_workbook(book_name)
-        #print "Found workbook"
         new_wb=-1
         try:
+            # Found tab
             ws = wb.get_sheet_by_name(tab_name) #this does not error if it doesn't find what it wants
             if ws==None:
                 1+"one"#throw error"
             else:
                 pass
-                #print "Found tab"
         except:
-            #print "Found workbook, but didn't find tab"
+            #Found workbook, but didn't find tab"
             ws=wb.create_sheet(-1,tab_name)
             ws=wb.get_sheet_by_name(tab_name)
             new_wb=-1
@@ -217,7 +223,7 @@ def print_to_workbook(data_order_list,dict_to_print,source_path,tab_name):
                 i=i+1
         
     except: ## If it doesn't exist then start a new workbook in memory
-        #print "Didn't find workbook"
+        #Didn't find workbook
         wb = Workbook()
         ws = wb.create_sheet(-1,tab_name)
         ws = wb.get_sheet_by_name(tab_name)
@@ -227,20 +233,22 @@ def print_to_workbook(data_order_list,dict_to_print,source_path,tab_name):
             c=ws.cell(row=0, column=i)
             c.value=key
             i=i+1
-    
-    #for entry in dict_to_print:
-    
+        
     last_occ_row=ws.rows[-1][0].row
     
 
     i=0
     for key in data_order_list['library_info']['collection_order']:
-        #print key
+
         c=ws.cell(row=last_occ_row, column=i)
         try:
             c.value=dict_to_print[key].strip()
         except:
-            c.value=dict_to_print[key]
+            #Using this area to keep track of encoding errors
+            print "This text caused an error"
+            print dict_to_print[key]
+            c.value="Raw text contained bad chars, see intepreter."
+            #c.value=dict_to_print[key]
         i=i+1
             
     wb.save(book_name)

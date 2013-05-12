@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import Tkinter, tkFileDialog
 import re
@@ -82,7 +83,9 @@ def character_selection(string_to_pull_from, list_of_characters):
     #print "string"
     #print string_to_pull_from
 
-    string_to_pull_from=unicode(string_to_pull_from,"utf-8")
+    #string_to_pull_from=unicode(string_to_pull_from,"utf-8")
+    #print string_to_pull_from
+
 
     #print "string"
     #print string_to_pull_from
@@ -90,6 +93,11 @@ def character_selection(string_to_pull_from, list_of_characters):
     for char_in_string in string_to_pull_from:
         matched=0
         for char_in_list in list_of_characters:
+            boolean=(char_in_list==char_in_string)
+            #print char_in_list,
+            #print "=",
+            #print char_in_string,
+            #print boolean
             #print "char_in_list"
             #print char_in_list
             if char_in_string==char_in_list:
