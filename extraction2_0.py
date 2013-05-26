@@ -15,7 +15,7 @@ import os
 RIGHT=1
 LEFT=-1
 
-unicode_chars={"—":"-","‘":"'","’":"'","é":"e",'“':'"'}
+unicode_chars={"—":"-","‘":"'","’":"'","é":"e",'“':'"',"‘":"'"}
 
 
 ## The functions below look useless, but I want it to be easy to flesh them out someday
@@ -29,7 +29,8 @@ def get_utility_library_directory():
     return utility_library_directory
     
 def get_current_utility():
-    current_utility="Consolidated Edison"
+    #current_utility="Consolidated Edison"
+    current_utility="Castle Oil"
     return current_utility
 
 
@@ -166,6 +167,8 @@ def get_ref_text(raw_text_string,library_entry):
         start_index=index_and_match['index']
         try:
             end_index=len(index_and_match['match'])+start_index
+            #print "tried and exceeded"
+            #print index_and_match["match"]
         except:
             end_index=len(raw_text_string)
 
