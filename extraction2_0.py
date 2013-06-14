@@ -29,8 +29,9 @@ def get_utility_library_directory():
     return utility_library_directory
     
 def get_current_utility():
-    #current_utility="Consolidated Edison"
-    current_utility="Castle Oil"
+    #current_utility="Consolidated Edison 1"
+    current_utility="Consolidated Edison 2"
+    #current_utility="Castle Oil"
     return current_utility
 
 

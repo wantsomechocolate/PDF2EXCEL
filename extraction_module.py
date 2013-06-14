@@ -1,12 +1,7 @@
 # -*- coding: cp1252 -*-
-## Next step is to refine the refinement process
-## don't forget to tailer the char lists and trans
 ## don't forget to clip off leading and traling white space.
-## How to handle really special cases
 
-
-
-## Imports
+## Imports----------
 import useful as jc
 import ast
 import re
@@ -17,41 +12,26 @@ LEFT=-1
 ## My workaround encoding issues
 #unicode_chars={"—":"-","‘":"'","’":"'","é":"e",'“':'"',"‘":"'"}
 
+## The functions below look useless, but I want it to be easy to flesh them out
 
-## The functions below look useless, but I want it to be easy to flesh them out someday
-## Like, I won't do anything unless it is in a function
-## MOVED TO USEFUL
-##def get_default_directory():
-##    default_directory="C:\Users\James McGlynn\My Programs\Python Programs\pdf2txt\WorkRelated"
-##    return default_directory
-    
+## Returns the location of text file containing all utility information (regexes etc.)    
 def get_utility_library_directory():
     utility_library_directory="C:\Users\James McGlynn\My Programs\Python Programs\pdf2txt\WorkRelated\Utility_Libraries"
     return utility_library_directory
-    
+
+## Asks the user what library they want to use. It only asks once per time the program runs ATM
 def get_current_utility(list_of_utils):
     print "CHOOSE FROM THE LIST BELOW: "
-
-##    for i in range(len(list_of_utils)):
-##        print i+1,
-##        print " : "+list_of_utils
-####    print "1. CON ED"
-####    print "2. CASTLE OIL"
     start=1
     end=len(list_of_utils)
     promptString="MAKE YOUR SELECTION: "
     default=1
     choice=jc.getIntegerInput(start, end, promptString, default,list_of_utils)
-    
-    #current_utility="Consolidated Edison"
-    #current_utility="Castle Oil"
     return list_of_utils[choice-1]
 
-
-## This takes a location and outputs a list with a page of text at each entry
-## In the list
+## Takes path and returns every other line from the file at that path
+## This should be part of a data base.
 def get_document_list(text_file):
-    #text_file=jc.getPath(document_list_location)
     with open(text_file,'r') as fh:
         lines=fh.readlines()
     document_list=[]
@@ -60,35 +40,29 @@ def get_document_list(text_file):
         page_list=[]
     return document_list
 
-## Pulls from a file, should pull from data base
-## Ouput in any case is a dictionary
-## Takes a location and the desired utility
+## Retrieves the info on a desired utility. Returns a dictionary.
 def get_utility_library(utility,utility_dictionary_location):
     fh=open(utility_dictionary_location,'r')
-
     lines_list=fh.readlines()
     whole_doc=''
     for line in lines_list:
         whole_doc=whole_doc+line
-
     utility_dictionary=ast.literal_eval(whole_doc)
     utility_library_scope_def=utility_dictionary[utility]
     fh.close()
     return utility_library_scope_def
 
+## Returns all available utilities (top level dictionary keys)
 def get_utility_list(utility_dictionary_location):
     fh=open(utility_dictionary_location,'r')
-
     lines_list=fh.readlines()
     whole_doc=''
     for line in lines_list:
         whole_doc=whole_doc+line
-
     utility_dictionary=ast.literal_eval(whole_doc)
     util_list=[]
     for key in utility_dictionary:
         util_list.append(key)
-    #utility_library_scope_def=utility_dictionary[utility]
     fh.close()
     return util_list
 
@@ -101,7 +75,6 @@ def get_raw_chars(page_text,library_entry,unicode_chars):
     num_chars=library_entry['raw_char_collect']
 
     if direction==RIGHT:
-        ## If going to the right find flag, and make start index right after the last char of the flag
         index_and_match=jc.get_index_and_match(page_text,data_flag,flag_inst)
         match_length=len(index_and_match['match'])
 
@@ -111,16 +84,17 @@ def get_raw_chars(page_text,library_entry,unicode_chars):
             if end_index>len(page_text):
                 end_index=len(page_text)
             raw_text=page_text[start_index:end_index].strip()
+            
         except:
             start_index=index_and_match['index']
             end_index=index_and_match['index']
             raw_text=index_and_match['index']
       
-        ## Get end_index be adding 
     elif direction==LEFT:
         ## if left, just find the index of the flag
         index_and_match=jc.get_index_and_match(page_text,data_flag,flag_inst)
         match_length=len(index_and_match['match'])
+        
         try:
         ## And subtract to get the right character range
             end_index=index_and_match['index'] - 1
@@ -128,6 +102,7 @@ def get_raw_chars(page_text,library_entry,unicode_chars):
             if start_index<0:
                 start_index=0
             raw_text=page_text[start_index:end_index].strip()
+            
         except:
             start_index=index_and_match['index']
             end_index=index_and_match['index']
@@ -142,7 +117,11 @@ def get_raw_chars(page_text,library_entry,unicode_chars):
         matched=0
         for key in unicode_chars.iterkeys():
             if char==key:
+                print char,
+                print "equals",
+                print key
                 raw_text_string_2=raw_text_string_2+unicode_chars[key]
+                print raw_text_string2
                 matched=1
             else:pass
         if matched==0:

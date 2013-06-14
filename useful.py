@@ -17,10 +17,11 @@ def getPath(default_directory):
     root=Tkinter.Tk()                           ##  Explicitly call the root window so that you can...
     root.withdraw()                             ##  withdraw it!
     filePath=tkFileDialog.askopenfilename()     ##  imageFile will store the filename of the image you choose
-    path_list.append(filePath)
+    #path_list.append(filePath)
     root.destroy()                              ##  Some overkill
     os.chdir(origDir)                           ##  Change dir back for net zero change
-    return path_list
+    #return path_list
+    return filePath
     ## This returns a full path - not a filename
 
 
@@ -39,10 +40,10 @@ def getPaths(default_directory):
         filePaths=filePaths[start_index:]
         try:
             match=re.search(regex,filePaths).group()
-            start_index=start_index+len(match)
+            start_index=len(match)
             path_list.append(match[1:-1])
         except:
-            #print "GetPaths was excepted"
+            print "GetPaths was excepted"
             matched=0    
     
     #path_list.append(filePath)
