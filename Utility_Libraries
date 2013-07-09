@@ -1,6 +1,6 @@
-{"Consolidated Edison":{"library_info":{
+{"Consolidated Edison 1":{"library_info":{
 
-							"utility":"Consolidated Edison",
+							"utility":"Consolidated Edison 1",
 
 							"collection_order":("Name","Account Number","Rate Structure","G&T Demand Charge1","G&T Demand Charge2","G&T Demand1",
 												"G&T Demand2","Primary Demand Charge1","Primary Demand Charge2", "Primary Demand1","Primary Demand2",
@@ -251,9 +251,241 @@
 									"collection_type"          : 0}
 						}
 					},
+					
+
+"Consolidated Edison 2b":{"library_info":{
+
+							"utility":"Consolidated Edison 2b",
+							
+							"piece_coordinates":((0,0,1,180),(0,180,0.5,1),(0.5,180,1,1)),
+
+							"collection_order":("Name","Account Number","Rate Structure","Date From","Date To","ESCO","Meter Number",
+												"Con Ed Elec Charges","Total delivery charges","Your Electricity Use","Your Electricity Demand",
+												"kWh Delivery Charge","Energy Delivery","Demand Delivery","Demand Delivery Charge"),
+
+							"heading_order":("Name","Account Number","Rate Structure","Date","G&T Demand1",
+												"G&T Demand2","Primary Demand1","Primary Demand2",
+												"Secondary Demand1","Secondary Demand2")},
+						"extraction_parameters":{
+
+							"Name":{
+									"data_flag"                : "Name:",	
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 40,
+									"collection_method"        : "bounds",
+									"left_bound_regex"		   : "null",
+									"right_bound_regex"		   : "5?Account",
+									"data_regex"			   : "null",
+									"character_list"		   : "none",
+									"character_trans"		   : "none",
+									"include_in_final"         : "NO",
+									"collection_type"          : 0},
+
+							"Account Number":{
+									"data_flag"                : "Account number:",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 50,
+									"collection_method"        : "bounds",
+									"left_bound_regex"		   : "null",
+									"right_bound_regex"		   : "[B][ilI1][ilI1][ilI1][ilI1][nh][gp]",
+									"data_regex"			   : "[—1234567890ODilI~-|]*thisdoenstwork",
+									"character_list"		   : ["1","2","3","4","5","6","7","8","9","0","i","O","D","-","|","l","I","~"],
+									"character_trans"		   : {"O":0,"D":0,"|":1,"i":1,"I":1,"l":1,"~":"-"},
+									"include_in_final"         : "NO",
+									"collection_type"          : 0},
+
+							"Rate Structure":{
+									"data_flag"                : "Rate:",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 50,
+									"collection_method"        : "bounds",
+									"left_bound_regex"		   : "null",
+									"right_bound_regex"		   : "Met",
+									"data_regex"			   : "null",
+									"character_list"		   : "none",
+									"character_trans"		   : "none",
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},
+
+							"Date From":{
+									"data_flag"                : "from",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 40,
+									"collection_method"        : "bounds",
+									"left_bound_regex"		   : "null",
+									"right_bound_regex"		   : "to",
+									"data_regex"			   : "null",
+									"character_list"		   : "none",
+									"character_trans"		   : {'"':","},
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},
+									
+							"Date To":{
+									"data_flag"                : "from",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 40,
+									"collection_method"        : "bounds",
+									"left_bound_regex"		   : "to",
+									"right_bound_regex"		   : "(Rate|The)",
+									"data_regex"			   : "null",
+									"character_list"		   : "none",
+									"character_trans"		   : "none",
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},
+
+							"Con Ed Elec Charges":{
+									"data_flag"                : "[Cc][0DOoa]n Edis[0DOoa]n electric ch[0DOoa]rge[5s]",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 50,
+									"collection_method"        : "data",
+									"left_bound_regex"		   : "[kK:lI|]<?[wWV]",
+									"right_bound_regex"		   : "([cC]|b)",
+									"data_regex"			   : "[$][1234567890,. 1IliOD]*",
+									"character_list"		   : ["1","2","3","4","5","6","7","8","9","0","i","O","D","-","|","l","I","~",".","/",",","$"," ","!"],
+									"character_trans"		   : {"O":0,"D":0,"|":1,"i":1,"I":1,"l":1,"~":"-","/":7,"-":".",},
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},	
+
+							"Total delivery charges":{
+									"data_flag"                : "y ch[0DOoa]r[g ]es",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 40,
+									"collection_method"        : "data",
+									"left_bound_regex"		   : "[kK:lI|]<?[wWV]",
+									"right_bound_regex"		   : "([cC]|b)",
+									"data_regex"			   : "[$][1234567890,. 1IliOD]*",
+									"character_list"		   : ["1","2","3","4","5","6","7","8","9","0","i","O","D","-","|","l","I","~",".","/",",","$"," ","!"],
+									"character_trans"		   : {"O":0,"D":0,"|":1,"i":1,"I":1,"l":1,"~":"-","/":7,"-":".",},
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},										
+									
+							"Meter Number":{
+									"data_flag"                : "M[oe]t[oe]([rd]|:-)(#|ii)?",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 30,
+									"collection_method"        : "data",
+									"left_bound_regex"		   : "null",
+									"right_bound_regex"		   : "[kK:lI|]<?[wW]",
+									"data_regex"			   : "[ ]?[1234567890,. 1IliOD]*",
+									"character_list"		   : ["1","2","3","4","5","6","7","8","9","0","i","O","D","-","|","l","I","~",".","/",","],
+									"character_trans"		   : {"O":0,"D":0,"|":1,"i":1,"I":1,"l":1,"~":"-","/":7,"-":"."},
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},
+
+							"Your Electricity Use":{
+									"data_flag"                : "Your electricity use",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 30,
+									"collection_method"        : "data",
+									"left_bound_regex"		   : "null",
+									"right_bound_regex"		   : "[kK:lI|]<?[wW]",
+									"data_regex"			   : "[ ]?[1234567890,. 1IliOD]*",
+									"character_list"		   : ["1","2","3","4","5","6","7","8","9","0","i","O","D","-","|","l","I","~",".","/",","],
+									"character_trans"		   : {"O":0,"D":0,"|":1,"i":1,"I":1,"l":1,"~":"-","/":7,"-":"."},
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},
+
+							"Your Electricity Demand":{
+									"data_flag"                : "Your electricity use",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 50,
+									"collection_method"        : "bounds",
+									"left_bound_regex"		   : "[kK:lI|]<?[wWV]h",
+									"right_bound_regex"		   : "[kK:lI|]<?[wWV]",
+									"data_regex"			   : "[$][1234567890,. 1IliOD]*",
+									"character_list"		   : ["1","2","3","4","5","6","7","8","9","0","i","O","D","-","|","l","I","~",".","/",",","$"," ","!"],
+									"character_trans"		   : {"O":0,"D":0,"|":1,"i":1,"I":1,"l":1,"~":"-","/":7,"-":".",},
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},	
+
+							"kWh Delivery Charge":{
+									"data_flag"                : "Energy delivery",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 40,
+									"collection_method"        : "bounds",
+									"left_bound_regex"		   : "[kK:lI|]<?[wWV]h",
+									"right_bound_regex"		   : "[ ][^\d]",
+									"data_regex"			   : "[$][1234567890,. 1IliOD]*",
+									"character_list"		   : ["1","2","3","4","5","6","7","8","9","0","i","O","D","-","|","l","I","~",".","/",",","$"," ","!"],
+									"character_trans"		   : {"O":0,"D":0,"|":1,"i":1,"I":1,"l":1,"~":"-","/":7,"-":".",},
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},									
+									
+							"Energy Delivery":{
+									"data_flag"                : "Energy delivery",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 40,
+									"collection_method"        : "data",
+									"left_bound_regex"		   : "null",
+									"right_bound_regex"		   : "[kK:lI|]<?[wWV]",
+									"data_regex"			   : "[ ]?[1234567890,. 1IliOD]*",
+									"character_list"		   : ["1","2","3","4","5","6","7","8","9","0","i","O","D","-","|","l","I","~",".","/",","],
+									"character_trans"		   : {"O":0,"D":0,"|":1,"i":1,"I":1,"l":1,"~":"-","/":7,"-":"."},
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},
+
+							"Demand Delivery":{
+									"data_flag"                : "Demand delivery",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 30,
+									"collection_method"        : "bounds",
+									"left_bound_regex"		   : "null",
+									"right_bound_regex"		   : "[kK:lI|]<?[wWV]",
+									"data_regex"			   : "null",
+									"character_list"		   : ["1","2","3","4","5","6","7","8","9","0","i","O","D","-","|","l","I","~",".","/",","],
+									"character_trans"		   : {"O":0,"D":0,"|":1,"i":1,"I":1,"l":1,"~":"-","/":7,"-":"."},
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},
+
+							"Demand Delivery Charge":{
+									"data_flag"                : "Demand delivery",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 30,
+									"collection_method"        : "bounds",
+									"left_bound_regex"		   : "[kK:lI|]<?[wWV]",
+									"right_bound_regex"		   : "[ ][^\d]",
+									"data_regex"			   : "[$][1234567890,. 1IliOD]*",
+									"character_list"		   : ["1","2","3","4","5","6","7","8","9","0","i","O","D","-","|","l","I","~",".","/",",","$"," ","!"],
+									"character_trans"		   : {"O":0,"D":0,"|":1,"i":1,"I":1,"l":1,"~":"-","/":7,"-":".",},
+									"include_in_final"         : "YES",
+									"collection_type"          : 0},	
+
+							"ESCO":{
+									"data_flag"                : "Your electricity is supplied by",
+									"data_flag_inst"           : 1,
+									"direction"                : 1,
+									"raw_char_collect"         : 40,
+									"collection_method"        : "bounds",
+									"left_bound_regex"		   : "null",
+									"right_bound_regex"		   : "null",
+									"data_regex"			   : "null",
+									"character_list"		   : "none",
+									"character_trans"		   : "none",
+									"include_in_final"         : "YES",
+									"collection_type"          : 0}
+						}
+					},
+					
 
 "Castle Oil":{"library_info":{
 							"utility":"Castle Oil",
+							
+							"piece_coordinates":[[0,0,1,1]],							
+							
 							"collection_order":("Account Number","Address","Delivery Date","Fuel Oil Type",
 												"Gallons","Total-Discount","Discount","Base Price"),
 							"heading_order":("address","account number","base price","discount","total-discount",
