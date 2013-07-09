@@ -121,6 +121,9 @@ def pdf2txt(target_pdf,page_num,scale_factor,ext,num_pages,util_lib):
 
 
 
+    ##Begin the peices escapade
+        
+        im = Image.open(converted_image_inter)
 
         ## not really a list anymore, passes the image to tess which makes it into a string
         print "EXTRACTING TEXT FROM PAGE: "+str(i+1)
@@ -129,10 +132,16 @@ def pdf2txt(target_pdf,page_num,scale_factor,ext,num_pages,util_lib):
         print pieces
         for section in pieces:
             for i in range(len(section)):
-                if section[i]%2=0:
-                    newcoordinate=section[i]*
+                if i%2==0:
+                    if section[i]<=1:
+                        newcoordinate=section[i]*im.size[0]
+                        section[i]=newcoordinate
+                if i%2==1:
+                    if section[i]<=1:
+                        newcoordinate=section[i]*im.size[0]
+                        section[i]=newcoordinate
                 
-        im = Image.open(converted_image_inter)
+
 
         word_list_inter=""
         for i in range(len(pieces)):
@@ -143,7 +152,7 @@ def pdf2txt(target_pdf,page_num,scale_factor,ext,num_pages,util_lib):
             image_section.save(image_section_filename)
             page_text_section=img2txt(image_section_filename)
 
-            word_list_inter=word_list_inter+page_text
+            word_list_inter=word_list_inter+page_text_section
             ##
             ##im2=im.crop((0,180,im.size[0]/2,im.size[1]))
             ##im2.save('croppedImageTest2.png')
