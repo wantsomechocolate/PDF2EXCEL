@@ -26,6 +26,7 @@ The input to the program at this point is meant to be Consolidated Edison Utilit
 **Future Considerations:**
 --------------------------
 **Current Considerations**
+
 *Look into how to compare images for structural similarities.
 *Decide on platform for GUI. Web based? Desktop based?
 *Consider making templates for common utilities so users don't have to draw a bunch of little boxes every time.
@@ -33,6 +34,7 @@ The input to the program at this point is meant to be Consolidated Edison Utilit
 *A timer to show the user how much time they are spending on data entry. 
 
 **Slightly Outdated Considerations**
+
 *Look into printing through cute PDF programatically 
 
 System Requirements
@@ -48,11 +50,13 @@ These are for Windows - I don't know how/if this would work on another platform)
 **Wand** - "pip install wand" worked for me after ImageMagick was properly installed (Reboot may be required)
 
 **PyTesser** - https://code.google.com/p/pytesser/
+
 *Download the zip file and you can either put all the files in with the project directory (messy) 
 *or you can just create a __init__.py file and put it in with all the files inside a folder called pytesser and throw that whole thing into the site packages directory. 
 *Or go the super legit route and make an actually package with the pytesser stuff, but I don't know how to do that. 
 
 **cv2** - opencv python binding
+
 *Apparently this involves downloading numpy first...
 *pip install numpy failed for me with "unable to find vcvarsall.bat"
 *I used "http://www.softpedia.com/get/Programming/Other-Programming-Files/Numpy.shtml" - it's the one where the alt text comes up saying this is the one to click
