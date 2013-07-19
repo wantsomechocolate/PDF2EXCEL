@@ -53,7 +53,7 @@ These are for Windows - I don't know how/if this would work on another platform)
 
 * Download the zip file and you can either put all the files in with the project directory (messy) 
 * or you can just create a __init__.py file and put it in with all the files inside a folder called pytesser and throw that whole thing into the site packages directory. 
-* Or go the super legit route and make an actually package with the pytesser stuff, but I don't know how to do that. 
+* Or go the super legit route and make an actuall package with the pytesser stuff, but I don't know how to do that. 
 
 **cv2** - opencv python binding
 
