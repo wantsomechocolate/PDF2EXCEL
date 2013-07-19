@@ -4,22 +4,23 @@ Welcome to the README for PDF2XLS. The decision to embark on the journey to make
 
 The input to the program at this point is meant to be Consolidated Edison Utility Bills. Of course there are ESCO bills, oil bills and perhaps others, but Con Ed is the majority and thus the focus of this project. The program (supposedly) works in the following way:
 
-USER selects several files (pdfs and images)
-	This is achieved through the tk askopenfile dialouge 
-CONVERT each page of every PDF to images.
-	PDF Manipulation is done primarily with pyPDF - The PDFs are scaled prior to conversion to image (necessary?)
-CROP and STRAIGHTEN all the converted images and any others.
-	The rotation of the images is accomplished using opencv's probabilistic Hough line algorithm. It returns the coordinates of the lines it found and the angle of rotation is found by averaging the slopes and taking the arctan (don't forget to convert from radians to degrees) The cropping was a bit harder because the bounding box method typical of pretty much all image manipulation packages doesn't suit my needs because it won't ignore noise common at the edges of scanned documents. I wrote a function that checks the percent data in each row and column near the edges of the image and how long data persists into the image and get a "bounding box" based on that.
-COMPARE all of the rotated and cropped images and group them into similar buckets. 
-	For example, if there are 24 bills of the same style and 4 pages in each bill. The analysis should result in 4 groups, each with 24 pages in it. This is the stage I am currently at.
-USER highlights the areas in each group where the desired data resides 
-	The idea is that data should be in the same spot on each image in the same group.
-OCR each of the highlighted areas for every image in each group
-	If there are 4 groups and the user only needs data from one group, and they need 5 pieces of data, then there will be one group with 5 boxes, 3 groups with no boxes and every page in the one group will get OCR'ed in 5 different spots. Also, the peices may need to be magnified before going to OCR
-REFINE and analyze the OCR'ed data
-	Each highlighted box will have a type of data it is trying to collect associated with it: ($)(#)(A). And the types of data will have allowable characters and common confusions associated with it, so that the final output has a greater chance of being correct. 
-WRITE the output to a spreadsheet (.xlsx)
-	Keeping track of everything so that it is in the same order as in the documents chosen, for easy comparison. In fact, each PDF document should get its own table (same tab). Images should all go in the same table, but each row of data will be denoted with the image filename. (This is ok to do because there are usually much less images then PDFs for any project.
+<dl>
+<dt>USER selects several files (pdfs and images)</dt>
+<dd>This is achieved through the tk askopenfile dialouge</dd>
+<dt>CONVERT each page of every PDF to images</dt>
+<dd>PDF Manipulation is done primarily with pyPDF - The PDFs are scaled prior to conversion to image (necessary?)</dd>
+<dt>CROP and STRAIGHTEN all the converted images and any others.</dt>
+<dd>The rotation of the images is accomplished using opencv's probabilistic Hough line algorithm. It returns the coordinates of the lines it found and the angle of rotation is found by averaging the slopes and taking the arctan (don't forget to convert from radians to degrees) The cropping was a bit harder because the bounding box method typical of pretty much all image manipulation packages doesn't suit my needs because it won't ignore noise common at the edges of scanned documents. I wrote a function that checks the percent data in each row and column near the edges of the image and how long data persists into the image and get a "bounding box" based on that.</dd>
+<dt>COMPARE all of the rotated and cropped images and group them into similar buckets</dt>
+<dd>For example, if there are 24 bills of the same style and 4 pages in each bill. The analysis should result in 4 groups, each with 24 pages in it. This is the stage I am currently at.</dd>
+<dt>USER highlights the areas in each group where the desired data resides</dt>
+<dd>The idea is that data should be in the same spot on each image in the same group.</dd>
+<dt>OCR each of the highlighted areas for every image in each group</dt>
+<dd>If there are 4 groups and the user only needs data from one group, and they need 5 pieces of data, then there will be one group with 5 boxes, 3 groups with no boxes and every page in the one group will get OCR'ed in 5 different spots. Also, the peices may need to be magnified before going to OCR</dd>
+<dt>REFINE and analyze the OCR'ed data</dt>
+<dd>Each highlighted box will have a type of data it is trying to collect associated with it: ($)(#)(A). And the types of data will have allowable characters and common confusions associated with it, so that the final output has a greater chance of being correct. </dd>
+<dt>WRITE the output to a spreadsheet (.xlsx)</dt>
+<dd>Keeping track of everything so that it is in the same order as in the documents chosen, for easy comparison. In fact, each PDF document should get its own table (same tab). Images should all go in the same table, but each row of data will be denoted with the image filename. (This is ok to do because there are usually much less images then PDFs for any project.</dd>
 
 
 **Future Considerations:**
