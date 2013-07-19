@@ -1,46 +1,61 @@
 PDF2XLS
 =======
-
-NOTE: If the program is only looking at a small peice of each page of your pdf, I know it sounds dumb, but print your pdf.... to a pdf.., using cutePDF. I had the same problem with some of my test PDFs and spent days trying to figure out what it was, to no avail. So try the cutePDF thing out. If that doesn't work, and you don't want to mess with the source, then .... contact me? I think I know a really long annoying way around the problem that I never looked into because the cutePDF solution suited my needs. 
-
 Welcome to the README for PDF2XLS. The decision to embark on the journey to make this program was fueled by the hatred of performing a repetative action, which is probably the case for a lot of programs. 
 
-The input to the program at this point is meant to be Consolidated Edison Utility Bills. Of course ESCO bills will come after. Anyway the program works by taking a pdf, scaling it to 400% the original size (using pyPdf), converting the scaled version to a png image file (using ImageMagick and the Wand python binding) and then giving that image to Google's Tesseract, which returns a string. Then the string has to be parsed to look for the desired data from the original document, in this case a utility bill. 
+The input to the program at this point is meant to be Consolidated Edison Utility Bills. Of course there are ESCO bills, oil bills and perhaps others, but Con Ed is the majority and thus the focus of this project. The program (supposedly) works in the following way:
 
-I am currently at the string parsing stage. I'm going to first analyze the output looking only for perfect matches and call that 100% confidence. That won't give me much of the data I want, but at least I can see how well everything is working and how I want to output the data. 
+USER selects several files (pdfs and images)
+	This is achieved through the tk askopenfile dialouge 
+CONVERT each page of every PDF to images.
+	PDF Manipulation is done primarily with pyPDF - The PDFs are scaled prior to conversion to image (necessary?)
+CROP and STRAIGHTEN all the converted images and any others.
+	The rotation of the images is accomplished using opencv's probabilistic Hough line algorithm. It returns the coordinates of the lines it found and the angle of rotation is found by averaging the slopes and taking the arctan (don't forget to convert from radians to degrees) The cropping was a bit harder because the bounding box method typical of pretty much all image manipulation packages doesn't suit my needs because it won't ignore noise common at the edges of scanned documents. I wrote a function that checks the percent data in each row and column near the edges of the image and how long data persists into the image and get a "bounding box" based on that.
+COMPARE all of the rotated and cropped images and group them into similar buckets. 
+	For example, if there are 24 bills of the same style and 4 pages in each bill. The analysis should result in 4 groups, each with 24 pages in it. This is the stage I am currently at.
+USER highlights the areas in each group where the desired data resides 
+	The idea is that data should be in the same spot on each image in the same group.
+OCR each of the highlighted areas for every image in each group
+	If there are 4 groups and the user only needs data from one group, and they need 5 pieces of data, then there will be one group with 5 boxes, 3 groups with no boxes and every page in the one group will get OCR'ed in 5 different spots. Also, the peices may need to be magnified before going to OCR
+REFINE and analyze the OCR'ed data
+	Each highlighted box will have a type of data it is trying to collect associated with it: ($)(#)(A). And the types of data will have allowable characters and common confusions associated with it, so that the final output has a greater chance of being correct. 
+WRITE the output to a spreadsheet (.xlsx)
+	Keeping track of everything so that it is in the same order as in the documents chosen, for easy comparison. In fact, each PDF document should get its own table (same tab). Images should all go in the same table, but each row of data will be denoted with the image filename. (This is ok to do because there are usually much less images then PDFs for any project.
 
-Future Considerations:
-Fix the raw output so that each page is in its own div so that it can be viewed locally with a browser. 
-Try to code in confidence levels to the output. 
-Consider taking multiple pdfs as inputs.
+
+**Future Considerations:**
+--------------------------
+**Current Considerations**
+Look into how to compare images for structural similarities.
+Decide on platform for GUI. Web based? Desktop based?
+Consider making templates for common utilities so users don't have to draw a bunch of little boxes every time.
+Decide on the best way to present the data after it has been recovered from the documents.
+A timer to show the user how much time they are spending on data entry. 
+
+**Slightly Outdated Considerations**
 Look into printing through cute PDF programatically
-Investigate enhancing the image a little bit prior to submitting it to the Tesseract. 
-Code the open file dialog. Should just be an import from an old project. 
-  (I remember SOMEONE telling me that the python tk command to retrieve a directory didn't work on a mac...)
-The program has to be able to know what utility's bill it's looking at, and what page of the bill, if applicable. 
-  I'm still trying to decide if this is more or less important than getting the info from a particular bill. 
+
+ 
 Make all these considerations projects and milestones within Github. 
 
-System Reqs
+**System Requirements (For Windows - I don't know how/if this would work on another platform)**
 
-pyPdf - pip install pyPdf works
+**pyPdf** - "pip install pyPdf" worked on my machines
 
-ImageMagick - http://www.imagemagick.org/script/binary-releases.php#windows (Obviously for Windows)
+**ImageMagick** - http://www.imagemagick.org/script/binary-releases.php#windows
 
-  Note: You must manually create a new system variable called MAGICK_HOME which is set to the top dir of the ImageMagick Installation
+	Note: You must manually create a new system variable called MAGICK_HOME which is set to the top level directory of the ImageMagick Installation
 
-Wand - pip install wand works after ImageMagick is properly installed (Reboot probably required)
+**Wand** - "pip install wand" worked for me after ImageMagick was properly installed (Reboot may be required)
 
-python-tesseract - http://code.google.com/p/python-tesseract/
+**PyTesser** - https://code.google.com/p/pytesser/
+	Download the zip file and you can either put all the files in with the project directory (messy) or you can just create a __init__.py file and put it in with all the files insdie a folder called pytesser and throw that whole thing into the site packages directory. Or go the super legit route and make an actually package with the pytesser stuff, but I don't know how to do that. 
 
-cv2
+**cv2** - opencv python binding
   Apparently this involves downloading numpy first...
   pip install numpy failed for me with "unable to find vcvarsall.bat"
-  I used "http://www.softpedia.com/get/Programming/Other-Programming-Files/Numpy.shtml" - it's the one where the alt    text comes up saying this is the one to click
+  I used "http://www.softpedia.com/get/Programming/Other-Programming-Files/Numpy.shtml" - it's the one where the alt text comes up saying this is the one to click
   I used this guys site to download opencv "http://opencvpython.blogspot.com/2012/05/install-opencv-in-windows-for-python.html"
   
-ghostscript - http://www.ghostscript.com/download/gsdnld.html
+**ghostscript** - http://www.ghostscript.com/download/gsdnld.html
 
-Once all that is done it runs and imports everything successfully
-
-I really need to work on extracting the actual data soon...............
+Once all that is done it runs and imports everything successfully - I think. Let me know if I missed anything
