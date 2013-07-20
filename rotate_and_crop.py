@@ -22,8 +22,26 @@ import PIL.ImageOps
 ## I use numpy mostly for going between PIL and cv2
 import numpy as np
 
+## I use this for deleting temp files
+import os
+
 ## This is the main function that gets called to crop and rotate
 def rotate_and_crop(pil_image_handle):
+
+    ## If the image is too large, than the program has a hard time finding Hough lines and
+    ## The skew angle gets all messed up. 
+    width_cutoff=1500
+    width_replace=1000
+    ## Get image dimensions
+    imw,imh=pil_image_handle.size
+    ## Check to see if image makes the cut
+    if imw>=width_cutoff:
+        print "Image was too large: Resizing"
+        nw=width_replace
+        nh=(float(nw)/float(imw))*imh
+        pil_image_handle=pil_image_handle.resize((int(nw),int(nh)))
+
+    
     ## If the image is a color image
     if pil_image_handle.mode=="RGB":
         ## Load the pixel data into a numpy array
@@ -43,6 +61,22 @@ def rotate_and_crop(pil_image_handle):
         im_cv2_gray=cv2.cvtColor(im_cv2,cv2.COLOR_BGR2GRAY)
         ##Convert image to black and white
         (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
+    elif pil_image_handle.mode=='P':
+        ## Convert to an RGB image
+        pil_image_handle=pil_image_handle.convert('RGB')
+        ## Save image
+        pil_image_handle.save('temp.png')
+        ## Open Image
+        pil_image_handle=pili.open('temp.png')
+        ## Load the pixel data into a numpy array
+        im_cv2=np.array(pil_image_handle)
+        ## Delete Temp Image
+        os.remove('temp.png')
+        ## Convert the pixel data into grayscale using opencv
+        im_cv2_gray=cv2.cvtColor(im_cv2,cv2.COLOR_BGR2GRAY)
+        ##Convert image to black and white
+        (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         
     ## if the image is grayscale already (or is this B&W image mode)
     elif pil_image_handle.mode=="L":
@@ -51,13 +85,25 @@ def rotate_and_crop(pil_image_handle):
         ##Convert image to black and white
         (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
-    ## If it doens't meet any other criteria, at least try to grab the pixel
+    ## If it doens't meet any other criteria, try to grab the pixel
     ## Data. It might not work, but whatever.
     else:
-        print "image wasn't RGB, RGBA, or L"
-        im_cv2_gray=np.array(pil_image_handle)
-        ##Convert image to black and white
-        (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        print "image wasn't RGB, RGBA, L, or P"
+        try:
+            ## Convert to an RGB image
+            pil_image_handle=pil_image_handle.convert('RGB')
+            ## Load the pixel data into a numpy array
+            im_cv2=np.array(pil_image_handle)
+            ## Convert the pixel data into grayscale using opencv
+            im_cv2_gray=cv2.cvtColor(im_cv2,cv2.COLOR_BGR2GRAY)
+            ##Convert image to black and white
+            (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        except:
+            print "Image wouldn't convert to RGB"
+            ## Just grab the pixel data
+            im_cv2_gray=np.array(pil_image_handle)
+            ##Convert image to black and white
+            (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     
     ## Now that the image has been numpified and is grayscale
     ## Use "fromarray" to create a PIL image handle using the grayscale data
@@ -68,14 +114,19 @@ def rotate_and_crop(pil_image_handle):
     ## Use a function from this file to calculate the angle of rotate
     ## based on Probabilistic Hough Lines
     skew_angle=get_skew_angle(im_cv2_bw)
+
+    ## If the skew angle comes back wonky then just set it to 0
+    if (float('-inf') < float(skew_angle) < float('inf'))==False:
+        print "Something went wrong when finding the skew_angle, image will not be straightened"
+        skew_angle=0
     
     ## Before rotating or finding the bounding box, the image must be color inverted
     ## because image editing functions see black as an absence of data
     im_invert=PIL.ImageOps.invert(im_pil)
-    
+
     ## rotate the image based on the skew angle found earlier
     im_rot=im_invert.rotate(skew_angle)
-    
+
     ## Now that the image is rotated to be straightened,
     ## Find the "bounding box" using a function from below
     ## I put bounding box in quotes because the function actually finds
