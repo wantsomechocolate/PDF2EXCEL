@@ -14,7 +14,7 @@ import ctypes
 ##import cv2.cv as cv
 
 ## For converting the image to strings method 2
-import pytesser as pyocr
+from tesseract import pytesser as pyocr
 
 ## For letting user select file paths
 import Tkinter, tkFileDialog
@@ -27,7 +27,7 @@ from PIL import Image
 
 ## For tasks that are not really related to either
 ## extraction or character recognition
-import useful
+from marbles import glass as useful
 
 ## Some program information - eventually this will be retrieved
 ## from some sort of program data file. 
