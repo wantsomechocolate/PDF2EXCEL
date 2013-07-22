@@ -24,7 +24,6 @@ def compare_images(img1, img2):
     img1=cv2.blur(img1,blur_weight)
     img2=cv2.blur(img2,blur_weight)
 
-    cv2.imwrite('asdf.png',img1)
     
     # calculate the difference and its norms
     diff = img1 - img2  # elementwise for scipy arrays
@@ -48,15 +47,12 @@ def blur(pil_image_handle_def,h_blur,v_blur,):
 
     blur_matrix=(h_blur,v_blur)
     
-    pil_image_handle_def.save('asdf0.png')
     
     imcv2=np.array(pil_image_handle_def)
     
-    cv2.imwrite('asdf1.png',imcv2)
     
     im_blur_def=cv2.GaussianBlur(imcv2,blur_matrix,0)
     
-    cv2.imwrite('asdf2.png',im_blur_def)
     
     im=pili.fromarray(im_blur_def)
     

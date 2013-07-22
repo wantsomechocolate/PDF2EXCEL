@@ -1,3 +1,5 @@
+##Figure out how to blur convert to black and white, blur again, convert to black and white
+
 import compare
 from PIL import Image as pili
 import os
@@ -7,7 +9,7 @@ from marbles import glass as useful
 
 wdir="C:/Users/James McGlynn/My Programs/Python Programs/pdf2txt/CompareExperiment/compare/"
 
-function="blur5x100/"
+function="blur5x101/"
 
 image_handle_list=[]
 
@@ -26,6 +28,9 @@ for i in range(len(image_handle_list)):
     image_save_path=outputDirectory+image_filename
     
     im_blur=compare.blur(image_handle_list[i],5,101)
+
+    im_blur=im_blur.convert('1')
+    
     im_blur.save(image_save_path)
 
 ##image_path='compare_2.png'
