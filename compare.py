@@ -7,6 +7,8 @@ from scipy.misc import imread
 from scipy.linalg import norm
 from scipy import sum, average
 import cv2
+from PIL import Image as pili
+import numpy as np
  
 ## Under normal usage this should take two black and white image handles
  
@@ -41,6 +43,25 @@ def normalize(arr):
     rng = arr.max()-arr.min()
     amin = arr.min()
     return (arr-amin)*255/rng
+
+def blur(pil_image_handle_def,h_blur,v_blur,):
+
+    blur_matrix=(h_blur,v_blur)
+    
+    pil_image_handle_def.save('asdf0.png')
+    
+    imcv2=np.array(pil_image_handle_def)
+    
+    cv2.imwrite('asdf1.png',imcv2)
+    
+    im_blur_def=cv2.GaussianBlur(imcv2,blur_matrix,0)
+    
+    cv2.imwrite('asdf2.png',im_blur_def)
+    
+    im=pili.fromarray(im_blur_def)
+    
+    return im
+    
 
 
 ##file1='im2.png'

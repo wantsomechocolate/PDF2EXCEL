@@ -28,18 +28,18 @@ import os
 ## This is the main function that gets called to crop and rotate
 def rotate_and_crop(pil_image_handle):
 
-    ## If the image is too large, than the program has a hard time finding Hough lines and
-    ## The skew angle gets all messed up. 
-    width_cutoff=1500
-    width_replace=1000
-    ## Get image dimensions
-    imw,imh=pil_image_handle.size
-    ## Check to see if image makes the cut
-    if imw>=width_cutoff:
-        print "Image was too large: Resizing"
-        nw=width_replace
-        nh=(float(nw)/float(imw))*imh
-        pil_image_handle=pil_image_handle.resize((int(nw),int(nh)))
+##    ## If the image is too large, than the program has a hard time finding Hough lines and
+##    ## The skew angle gets all messed up. 
+##    width_cutoff=1500
+##    width_replace=1000
+##    ## Get image dimensions
+##    imw,imh=pil_image_handle.size
+##    ## Check to see if image makes the cut
+##    if imw>=width_cutoff:
+##        print "Image was too large: Resizing"
+##        nw=width_replace
+##        nh=(float(nw)/float(imw))*imh
+##        pil_image_handle=pil_image_handle.resize((int(nw),int(nh)))
 
     
     ## If the image is a color image
@@ -115,10 +115,10 @@ def rotate_and_crop(pil_image_handle):
     ## based on Probabilistic Hough Lines
     skew_angle=get_skew_angle(im_cv2_bw)
 
-    ## If the skew angle comes back wonky then just set it to 0
-    if (float('-inf') < float(skew_angle) < float('inf'))==False:
-        print "Something went wrong when finding the skew_angle, image will not be straightened"
-        skew_angle=0
+##    ## If the skew angle comes back wonky then just set it to 0
+##    if (float('-inf') < float(skew_angle) < float('inf'))==False:
+##        print "Something went wrong when finding the skew_angle, image will not be straightened"
+##        skew_angle=0
     
     ## Before rotating or finding the bounding box, the image must be color inverted
     ## because image editing functions see black as an absence of data
@@ -145,6 +145,23 @@ def rotate_and_crop(pil_image_handle):
     return im_fin
 
 def get_skew_angle(cv2_grayscale_np_array):
+
+
+    ## If the image is too large, than the program has a hard time finding Hough lines and
+    ## The skew angle gets all messed up. 
+    width_cutoff=1500
+    width_replace=1000
+    ## Get image dimensions
+    imw,imh=cv2_grayscale_np_array.shape
+    ## Check to see if image makes the cut
+    if imw>=width_cutoff:
+        #print "Image was too large: Resizing"
+        nw=width_replace
+        nh=(float(nw)/float(imw))*imh
+        #pil_image_handle=pil_image_handle.resize((int(nw),int(nh)))
+        cv2_grayscale_np_array=cv2.resize(cv2_grayscale_np_array,(int(nw),int(nh)))
+
+
     
     ## The lengthy function arg was to be descriptive, inside the function
     ## It is shortened to im
@@ -217,6 +234,12 @@ def get_skew_angle(cv2_grayscale_np_array):
     angle_deg=np.arctan(one_std_ave_slope)*180/np.pi
 
     #return angle_deg, which should be a float
+
+    ## If the skew angle comes back wonky then just set it to 0
+    if (float('-inf') < float(angle_deg) < float('inf'))==False:
+        print "Something went wrong when finding the skew_angle, image will not be straightened"
+        angle_deg=0
+
     return angle_deg
 
 def get_bounding_box(pil_image_handle):
@@ -225,14 +248,16 @@ def get_bounding_box(pil_image_handle):
     im=pil_image_handle
     
     ## what percent of the linear column/row is data (non black)?
-    threshold=0.025 #2.5%
+    threshold=0.0175 #1.75%
     
     ## after you find where the data starts, how far back do you want to go?
-    revert_depth=20  ## This allows for a small border buffer
+    revert_depth=30  ## This allows for a small border buffer
+
+    revert_depth_right=100
     
     ## For how many pixels does the threshold need to be sustained?
     ## This is to prevent artifacts from scanning to throw off results
-    sustained_depth=10
+    sustained_depth=20
     
     ## Do I need a secondary threshold? As in initially meet thresh, but subsequently
     ## meet secondary thresh. Maybe the threshold should change with each step? who knows...
@@ -387,7 +412,7 @@ def get_bounding_box(pil_image_handle):
                 keep_counting=0 # stop calculating (just dumbly iterate through every row
                 boundary=im_width-j+sustained_depth # calculate boundary based on the current row
 
-    boundary=boundary+revert_depth
+    boundary=boundary+revert_depth_right
     if boundary>im_width:
         boundary=im_width
     bounding_box.append(boundary)

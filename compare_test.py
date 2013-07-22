@@ -3,8 +3,11 @@ from PIL import Image as pili
 import os
 import cv2
 import numpy as np
+from marbles import glass as useful
 
-wdir=""
+wdir="C:/Users/James McGlynn/My Programs/Python Programs/pdf2txt/CompareExperiment/compare/"
+
+function="blur5x100/"
 
 image_handle_list=[]
 
@@ -14,12 +17,36 @@ for item in os.listdir(wdir):
         image_handle=pili.open(image_full_path)
         image_handle_list.append(image_handle)
 
+outputDirectory=wdir+function
+if not os.path.exists(outputDirectory): os.makedirs(outputDirectory)
 
-compare_list=[]
 for i in range(len(image_handle_list)):
-    for j in range(1,len(image_handle_list)):
-        if i<j:
-            m_norm, z_norm = compare.compare_images(np.array(image_handle_list[i]), np.array(image_handle_list[j]))
-            compare_list.append([os.path.basename(image_handle_list[i].filename),os.path.basename(image_handle_list[j].filename),m_norm,z_norm])
+    image_filename=os.path.basename(image_handle_list[i].filename)
+    image_save_filename=useful.add_to_filename(image_filename,"_"+str(i))
+    image_save_path=outputDirectory+image_filename
+    
+    im_blur=compare.blur(image_handle_list[i],5,101)
+    im_blur.save(image_save_path)
 
-for item in compare_list: print item
+##image_path='compare_2.png'
+##im=pili.open(image_path)
+##im=im.resize((im.size[0]/4,im.size[1]/4))
+##im=np.array(im)
+##im=cv2.blur(im,(5,5))
+##
+##im=pili.fromarray(im)
+##
+##im.save('compare_2_blur.png')
+
+
+
+
+
+####compare_list=[]
+####for i in range(len(image_handle_list)):
+####    for j in range(1,len(image_handle_list)):
+####        if i<j:
+####            m_norm, z_norm = compare.compare_images(np.array(image_handle_list[i]), np.array(image_handle_list[j]))
+####            compare_list.append([os.path.basename(image_handle_list[i].filename),os.path.basename(image_handle_list[j].filename),m_norm,z_norm])
+####
+####for item in compare_list: print item
