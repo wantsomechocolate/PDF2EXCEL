@@ -9,7 +9,7 @@ from marbles import glass as useful
 
 wdir="C:/Users/James McGlynn/My Programs/Python Programs/pdf2txt/CompareExperiment/compare/"
 
-function="blur5x101/"
+function="gblur2bnw/"
 
 image_handle_list=[]
 
@@ -22,14 +22,20 @@ for item in os.listdir(wdir):
 outputDirectory=wdir+function
 if not os.path.exists(outputDirectory): os.makedirs(outputDirectory)
 
+blur_count=2
+
 for i in range(len(image_handle_list)):
     image_filename=os.path.basename(image_handle_list[i].filename)
     image_save_filename=useful.add_to_filename(image_filename,"_"+str(i))
     image_save_path=outputDirectory+image_filename
-    
-    im_blur=compare.blur(image_handle_list[i],5,101)
 
-    im_blur=im_blur.convert('1')
+
+    for j in range(blur_count):
+        image_handle_list[i]=compare.blur2bnw(image_handle_list[i],201,201)
+
+    im_blur=image_handle_list[i]
+
+    #im_blur=im_blur.convert('1')
     
     im_blur.save(image_save_path)
 

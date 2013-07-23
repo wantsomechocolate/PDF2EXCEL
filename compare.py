@@ -43,22 +43,40 @@ def normalize(arr):
     amin = arr.min()
     return (arr-amin)*255/rng
 
-def blur(pil_image_handle_def,h_blur,v_blur,):
+def blur2bnw(pil_image_handle,h_blur,v_blur):
 
     blur_matrix=(h_blur,v_blur)
+        
+    imcv2=np.array(pil_image_handle)
+        
+    im_blur=cv2.GaussianBlur(imcv2,blur_matrix,0)
+
+    #im_blur=cv2.blur(imcv2,blur_matrix)
+
+    thresh = 225
     
+    im_blur_bnw = cv2.threshold(im_blur, thresh, 255, cv2.THRESH_BINARY)[1]
     
-    imcv2=np.array(pil_image_handle_def)
+    #(thresh, im_blur_bnw) = cv2.threshold(im_blur, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+
+##    im_blur_bnw=cv2gray2bnw(im_blur, thresh)
     
-    
-    im_blur_def=cv2.GaussianBlur(imcv2,blur_matrix,0)
-    
-    
-    im=pili.fromarray(im_blur_def)
+    im=pili.fromarray(im_blur_bnw)
     
     return im
     
 
+##def cv2gray2bnw(grayscale_np_array, thresh):
+##    im=grayscale_np_array
+##    #thresh=200
+##    for r in range(len(im)):
+##        for p in range(len(im[r])):
+##            if im[r][p]>thresh:
+##                im[r][p]=255
+##            elif im[r][p]<thresh:
+##                print "didn't meet thresh"
+##                im[r][p]=0
+##    return im
 
 ##file1='im2.png'
 ##file2='im4.png'
