@@ -43,50 +43,61 @@ def normalize(arr):
     amin = arr.min()
     return (arr-amin)*255/rng
 
-def blur2bnw(pil_image_handle,h_blur,v_blur):
+def blurify(pil_image_handle,blur_count,blur_percent_x,blur_percent_y,output_mode,blur_method,thresh_or_auto):
 
-    blur_matrix=(h_blur,v_blur)
+## blur_count: How many times to perform the blur process with the same blur parameters
+## blur_percent: what percent of the image size should the blur space be?
+## output_mode: black and white (0) or grayscale(1)
+## blur_method: regular cv2.blur (1) or gassian blur (0)
+## thresh or auto: either auto (0) or a number from 1 to 255 that serves as the parameter for converting from
+    ## grayscale to black and white
+
+## some decent values:
+####blur_count=3
+####blur_percent_x=0.1
+####blur_percent_y=0.1
+####blur_method=0 #Gaussian
+####blur_output_mode=0 #black and white
+####threshold=225 #0 would be auto select, this has no effect when outputting grayscale
+
+    for j in range(blur_count):
+        hblur=int(pil_image_handle.size[0]*blur_percent_x)
+        if hblur%2==0:
+            hblur=hblur+1
+        vblur=int(pil_image_handle.size[1]*blur_percent_y)
+        if vblur%2==0:
+            vblur=vblur+1
+    blur_matrix=(hblur,vblur)
         
-    imcv2=np.array(pil_image_handle)
-        
-    im_blur=cv2.GaussianBlur(imcv2,blur_matrix,0)
+    im_blur=np.array(pil_image_handle)
 
-    #im_blur=cv2.blur(imcv2,blur_matrix)
+    if blur_method==0:
+        for i in range(blur_count):
+            im_blur=cv2.GaussianBlur(im_blur,blur_matrix,0)
+            if output_mode==1: pass
+            elif output_mode==0:
+                if thresh_or_auto==0:
+                    (thresh, im_blur) = cv2.threshold(im_blur, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+                else:
+                    im_blur = cv2.threshold(im_blur, thresh_or_auto, 255, cv2.THRESH_BINARY)[1]
 
-    thresh = 225
-    
-    im_blur_bnw = cv2.threshold(im_blur, thresh, 255, cv2.THRESH_BINARY)[1]
-    
-    #(thresh, im_blur_bnw) = cv2.threshold(im_blur, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    elif blur_method==1:
+        for i in range(blur_count):
+            im_blur=cv2.blur(im_blur,blur_matrix)
+            if output_mode==1: pass
+            elif output_mode==0:
+                if thresh_or_auto==0:
+                    (thresh, im_blur) = cv2.threshold(im_blur, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+                else:
+                    im_blur = cv2.threshold(im_blur, thresh_or_auto, 255, cv2.THRESH_BINARY)[1]
 
-##    im_blur_bnw=cv2gray2bnw(im_blur, thresh)
+    else: print "Blur method not supported"
     
-    im=pili.fromarray(im_blur_bnw)
+    im=pili.fromarray(im_blur)
     
     return im
     
 
-##def cv2gray2bnw(grayscale_np_array, thresh):
-##    im=grayscale_np_array
-##    #thresh=200
-##    for r in range(len(im)):
-##        for p in range(len(im[r])):
-##            if im[r][p]>thresh:
-##                im[r][p]=255
-##            elif im[r][p]<thresh:
-##                print "didn't meet thresh"
-##                im[r][p]=0
-##    return im
-
-##file1='im2.png'
-##file2='im4.png'
-# read images as 2D arrays (convert to grayscale for simplicity)
-#img1 = to_grayscale(imread(file1).astype(float))
-#img2 = to_grayscale(imread(file2).astype(float))
-# compare
-##n_m, n_0 = compare_images(img1, img2)
-##print "Manhattan norm:", n_m, "/ per pixel:", n_m/img1.size
-##print "Zero norm:", n_0, "/ per pixel:", n_0*1.0/img1.size
- 
-#if __name__ == "__main__":
-#    main()
+def resizify(im_handle,size_tuple):
+    im_resize=im_handle.resize(size_tuple)
+    return im_resize
