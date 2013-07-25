@@ -9,6 +9,7 @@ from scipy import sum, average
 import cv2
 from PIL import Image as pili
 import numpy as np
+import os
  
 ## Under normal usage this should take two black and white image handles
  
@@ -31,13 +32,6 @@ def compare_images(img1, img2):
     z_norm = round(float(norm(diff.ravel(), 0))/float(img1.size),6)  # Zero norm
     return (m_norm, z_norm)
  
-##def to_grayscale(arr):
-##    "If arr is a color image (3D array), convert it to grayscale (2D array)."
-##    if len(arr.shape) == 3:
-##        return average(arr, -1)  # average over the last axis (color channels)
-##    else:
-##        return arr
- 
 def normalize(arr):
     rng = arr.max()-arr.min()
     amin = arr.min()
@@ -45,20 +39,20 @@ def normalize(arr):
 
 def blurify(pil_image_handle,blur_count,blur_percent_x,blur_percent_y,output_mode,blur_method,thresh_or_auto):
 
-## blur_count: How many times to perform the blur process with the same blur parameters
-## blur_percent: what percent of the image size should the blur space be?
-## output_mode: black and white (0) or grayscale(1)
-## blur_method: regular cv2.blur (1) or gassian blur (0)
-## thresh or auto: either auto (0) or a number from 1 to 255 that serves as the parameter for converting from
-    ## grayscale to black and white
+    ## blur_count: How many times to perform the blur process with the same blur parameters
+    ## blur_percent: what percent of the image size should the blur space be?
+    ## output_mode: black and white (0) or grayscale(1)
+    ## blur_method: regular cv2.blur (1) or gassian blur (0)
+    ## thresh or auto: either auto (0) or a number from 1 to 255 that serves as the parameter for converting from
+        ## grayscale to black and white
 
-## some decent values:
-####blur_count=3
-####blur_percent_x=0.1
-####blur_percent_y=0.1
-####blur_method=0 #Gaussian
-####blur_output_mode=0 #black and white
-####threshold=225 #0 would be auto select, this has no effect when outputting grayscale
+    ## some decent values:
+    ####blur_count=3
+    ####blur_percent_x=0.1
+    ####blur_percent_y=0.1
+    ####blur_method=0 #Gaussian
+    ####blur_output_mode=0 #black and white
+    ####threshold=225 #0 would be auto select, this has no effect when outputting grayscale
 
     for j in range(blur_count):
         hblur=int(pil_image_handle.size[0]*blur_percent_x)
@@ -101,3 +95,48 @@ def blurify(pil_image_handle,blur_count,blur_percent_x,blur_percent_y,output_mod
 def resizify(im_handle,size_tuple):
     im_resize=im_handle.resize(size_tuple)
     return im_resize
+
+def pixel_compare(im1,im2):
+    ## Expects two 16x16 black and white pictures with the same everything.
+    im1=np.array(im1)
+    im2=np.array(im2)
+    diff=float(sum(abs(im1-im2)))/float((255*256*256))
+    sameness=1-diff
+    return sameness
+            
+
+def compare_results_one_image(image_comparison_list,filename,percent_sim_thresh):
+    print "Below are image results for ",
+    print filename
+    for item in image_comparison_list:
+            if os.path.basename(item[0].filename) == filename:
+                    if item[2]*100>percent_sim_thresh:
+                            print os.path.basename(item[0].filename),
+                            print os.path.basename(item[1].filename),
+                            print item[2]*100
+            elif os.path.basename(item[1].filename)== filename:
+                    if item[2]*100>percent_sim_thresh:
+                            print os.path.basename(item[0].filename),
+                            print os.path.basename(item[1].filename),
+                            print item[2]*100
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
