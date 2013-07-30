@@ -8,7 +8,7 @@
 
 ## This function has been tested for color images
 ## and Grayscale/Black&White
-## It was also tested with Jpegs and png files. 
+## It was also tested with Jpegs and png files.
 
 ## For work with images using numpy arrays to stor pixel data
 import cv2

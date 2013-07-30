@@ -27,7 +27,12 @@ The input to the program at this point is meant to be Consolidated Edison Utilit
 --------------------------
 **Current Considerations**
 
-* Look into how to compare images for structural similarities.
+* I should consider not converting the image to black and white before applying the hough line algorithm because making an image black and white is introducing a loss of information and some of the images (one so far) doesn't rotate properly. But when I use the hough line algorithm on the original image is skews perfectly.
+* Perhaps I should reevaluate using black and white images to begin with? Grayscale is probably better. I should convert everything to use grayscale.
+* I also need a better logging, tracking system that stores everything and the variables used to get there and the time and all that great stuff. Because this project is getting too big for me to remember and keep track of everything. 
+* I need to compare the dimensions of the images before comparing them. It is a waste of time to compare two images that were cropped and turned out to be markedly different sizes.
+* Also, I need to figure out which images were roughly the same size and then crop them by shaving off the right and bottom edges to match the smallest image in the group? and then resizing the identically sized images (then I could try resizing to a rectangle based on original dimensions instead of a predetermined sized square.
+* Look into how to compare images for structural similarities (being worked on above)
 * Decide on platform for GUI. Web based? Desktop based?
 * Consider making templates for common utilities so users don't have to draw a bunch of little boxes every time.
 * Decide on the best way to present the data after it has been recovered from the documents.

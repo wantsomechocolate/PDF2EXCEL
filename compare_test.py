@@ -35,12 +35,12 @@ for item in image_handle_list:
 
 ## THESE ARE INITILIZATIONS FOR BLUR. I MIGHT PUT THESE INTO THE FUNCTION.
 ## THEY ARE CLUTTERING THE PLACE UP. 
-blur_count=1
-blur_percent_x=0.1
-blur_percent_y=0.1
-blur_method=0 
+blur_count=0
+blur_percent_x=0.10
+blur_percent_y=0.10
+blur_method=0
 blur_output_mode=0
-threshold=225
+threshold=220
 
 
 time1=time()
@@ -48,11 +48,17 @@ time1=time()
 ## THE IMAGES ARE BLURRED AND SHRUNKEN A CERTAIN AMOUNT OF TIMES
 for i in range(len(image_handle_list)):
     ## BLUR IMAGE
-    im_blur=compare.blurify(image_handle_list[i][0],blur_count,blur_percent_x,blur_percent_y,blur_output_mode,blur_method,threshold)
+    if blur_count>0:
+        im_blur=compare.blurify(image_handle_list[i][0],blur_count,blur_percent_x,blur_percent_y,blur_output_mode,blur_method,threshold)
+    else:
+        im_blur=image_handle_list[i][0]
     ## RESIZE IMAGE TO 256x256
     im_resized=compare.resizify(im_blur,(256,256))
     ## BLUR IT AGAIN
-    im_blur=compare.blurify(im_resized,blur_count,blur_percent_x,blur_percent_y,0,blur_method,220)
+    if blur_count>0:
+        im_blur=compare.blurify(im_resized,blur_count,blur_percent_x,blur_percent_y,0,blur_method,220)
+    else:
+        im_blur=im_resized
     ## RESIZE AGAIN......?
     ## NO. im_resized=compare.resizify(im_blur,(16,16))
     im_final=im_blur
@@ -108,9 +114,9 @@ wb.save(book_name)
 
 
 
-im2compare="compare_05.png"
-thresh=99 
-compare.compare_results_one_image(image_comparison_list,im2compare,thresh)
+##im2compare="compare_05.png"
+##thresh=99 
+##compare.compare_results_one_image(image_comparison_list,im2compare,thresh)
 			
 
 

@@ -30,7 +30,7 @@ def pdf2imglist(pdf_path):
     save_dir_pdf=pdf_path[:pdf_path.rindex(".")]+'/pdf/'
 
     ## Where should individual images be saved
-    save_dir_img=pdf_path[:pdf_path.rindex(".")]+'/images/'
+    save_dir_img=pdf_path[:pdf_path.rindex(".")]+'/images2/'
 
     ## Make pdf directory
     if not os.path.exists(save_dir_pdf): os.makedirs(save_dir_pdf)
