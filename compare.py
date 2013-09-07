@@ -14,7 +14,7 @@ import os
 ## Under normal usage this should take two black and white image handles
  
 def compare_images(img1, img2):
-    blur_weight=100
+    blur_weight=20
     blur_weight=(blur_weight,blur_weight)
 
     # normalize to compensate for exposure difference
@@ -37,7 +37,7 @@ def normalize(arr):
     amin = arr.min()
     return (arr-amin)*255/rng
 
-def blurify(pil_image_handle,blur_count,blur_percent_x,blur_percent_y,output_mode,blur_method,thresh_or_auto):
+def blurify(pil_image_handle,blur_count):#,blur_percent_x,blur_percent_y,output_mode,blur_method,thresh_or_auto):
 
     ## blur_count: How many times to perform the blur process with the same blur parameters
     ## blur_percent: what percent of the image size should the blur space be?
@@ -53,6 +53,14 @@ def blurify(pil_image_handle,blur_count,blur_percent_x,blur_percent_y,output_mod
     ####blur_method=0 #Gaussian
     ####blur_output_mode=0 #black and white
     ####threshold=225 #0 would be auto select, this has no effect when outputting grayscale
+
+    #blur_count1=0
+    #blur_count2=1
+    blur_percent_x=0.25
+    blur_percent_y=0.25
+    blur_method=0
+    output_mode=0
+    thresh_or_auto=240
 
     for j in range(blur_count):
         hblur=int(pil_image_handle.size[0]*blur_percent_x)
@@ -97,10 +105,12 @@ def resizify(im_handle,size_tuple):
     return im_resize
 
 def pixel_compare(im1,im2):
-    ## Expects two 16x16 black and white pictures with the same everything.
+    imh=im1.size[0]
+    imw=im1.size[1]
+    ## Expects two pictures with the same everything, black and white or grayscale.
     im1=np.array(im1)
     im2=np.array(im2)
-    diff=float(sum(abs(im1-im2)))/float((255*256*256))
+    diff=float(sum(abs(im1-im2)))/float((imh*imw*255))
     sameness=1-diff
     return sameness
             
@@ -110,15 +120,15 @@ def compare_results_one_image(image_comparison_list,filename,percent_sim_thresh)
     print filename
     for item in image_comparison_list:
             if os.path.basename(item[0].filename) == filename:
-                    if item[2]*100>percent_sim_thresh:
+                    if item[2]>percent_sim_thresh:
                             print os.path.basename(item[0].filename),
                             print os.path.basename(item[1].filename),
-                            print item[2]*100
+                            print item[2]
             elif os.path.basename(item[1].filename)== filename:
-                    if item[2]*100>percent_sim_thresh:
+                    if item[2]>percent_sim_thresh:
                             print os.path.basename(item[0].filename),
                             print os.path.basename(item[1].filename),
-                            print item[2]*100
+                            print item[2]
 
 
 

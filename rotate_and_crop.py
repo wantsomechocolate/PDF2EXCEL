@@ -1,4 +1,7 @@
 ## Auto rotate and crop function written by James McGlynn using
+## Main Goal!
+## Convert only to grayscale, no black and white!
+
 ## open cv python binding (cv2)
 ## python image library (PIL)
 ## and of course, numerical python (numpy)
@@ -29,7 +32,8 @@ import os
 def rotate_and_crop(pil_image_handle):
 
 ##    ## If the image is too large, than the program has a hard time finding Hough lines and
-##    ## The skew angle gets all messed up. 
+##    ## The skew angle gets all messed up. ## Apparently this isn't true. it's because the image is black and white
+##    ## and the image loses data when converted to black and white. 
 ##    width_cutoff=1500
 ##    width_replace=1000
 ##    ## Get image dimensions
@@ -49,7 +53,7 @@ def rotate_and_crop(pil_image_handle):
         ## Convert the pixel data into grayscale using opencv
         im_cv2_gray=cv2.cvtColor(im_cv2,cv2.COLOR_BGR2GRAY)
         ##Convert image to black and white
-        (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        #(thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
     ## If the image is RGBA
     elif pil_image_handle.mode=='RGBA':
@@ -60,7 +64,7 @@ def rotate_and_crop(pil_image_handle):
         ## Convert the pixel data into grayscale using opencv
         im_cv2_gray=cv2.cvtColor(im_cv2,cv2.COLOR_BGR2GRAY)
         ##Convert image to black and white
-        (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        #(thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
     elif pil_image_handle.mode=='P':
         ## Convert to an RGB image
@@ -76,14 +80,14 @@ def rotate_and_crop(pil_image_handle):
         ## Convert the pixel data into grayscale using opencv
         im_cv2_gray=cv2.cvtColor(im_cv2,cv2.COLOR_BGR2GRAY)
         ##Convert image to black and white
-        (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        #(thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         
     ## if the image is grayscale already (or is this B&W image mode)
     elif pil_image_handle.mode=="L":
         ## Just grab the pixel data
         im_cv2_gray=np.array(pil_image_handle)
         ##Convert image to black and white
-        (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        #(thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
     ## If it doens't meet any other criteria, try to grab the pixel
     ## Data. It might not work, but whatever.
@@ -97,23 +101,25 @@ def rotate_and_crop(pil_image_handle):
             ## Convert the pixel data into grayscale using opencv
             im_cv2_gray=cv2.cvtColor(im_cv2,cv2.COLOR_BGR2GRAY)
             ##Convert image to black and white
-            (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+            #(thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         except:
             print "Image wouldn't convert to RGB"
             ## Just grab the pixel data
             im_cv2_gray=np.array(pil_image_handle)
             ##Convert image to black and white
-            (thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+            #(thresh, im_cv2_bw) = cv2.threshold(im_cv2_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     
     ## Now that the image has been numpified and is grayscale
     ## Use "fromarray" to create a PIL image handle using the grayscale data
     ## This might actually not be necessary if the image were already gray
     ## But for right now it's getting done.
-    im_pil=pili.fromarray(im_cv2_bw)
+    #im_pil=pili.fromarray(im_cv2_bw)
+    im_pil=pili.fromarray(im_cv2_gray)
     
     ## Use a function from this file to calculate the angle of rotate
     ## based on Probabilistic Hough Lines
-    skew_angle=get_skew_angle(im_cv2_bw)
+    #skew_angle=get_skew_angle(im_cv2_bw)
+    skew_angle=get_skew_angle(im_cv2_gray)
 
 ##    ## If the skew angle comes back wonky then just set it to 0
 ##    if (float('-inf') < float(skew_angle) < float('inf'))==False:
