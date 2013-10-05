@@ -113,22 +113,50 @@ def pixel_compare(im1,im2):
     diff=float(sum(abs(im1-im2)))/float((imh*imw*255))
     sameness=1-diff
     return sameness
-            
 
-def compare_results_one_image(image_comparison_list,filename,percent_sim_thresh):
-    print "Below are image results for ",
-    print filename
+
+def sort_list_of_image_handles(list_to_sort):
+    sorted_list=[]
+
+    list_to_sort=set(list_to_sort)
+
+# Strip filenames from the image handles to sort based on alphabet
+    for item in list_to_sort:
+        sorted_list.append(os.path.basename(item.filename))
+
+    # Standard sort
+    sorted_list.sort()
+
+    # I don't understand why this works, but it takes the image_handle_list (list of image handles)
+    # and moves its contents around to match the order of the the sorted list (list of strings)
+    for item in list_to_sort:
+        list_to_sort[sorted_list.index(os.path.basename(item.filename))]=item
+
+    return list_to_sort
+
+def compare_results_one_image_return_set(image_comparison_list,filename,percent_sim_thresh):
+    #print "Below are image results for ",
+    #print filename
+    group=[]
     for item in image_comparison_list:
             if os.path.basename(item[0].filename) == filename:
                     if item[2]>percent_sim_thresh:
-                            print os.path.basename(item[0].filename),
-                            print os.path.basename(item[1].filename),
-                            print item[2]
+##                            print os.path.basename(item[0].filename),
+##                            print os.path.basename(item[1].filename),
+##                            print item[2]
+                            group.append(item[0])
+                            group.append(item[1])
             elif os.path.basename(item[1].filename)== filename:
                     if item[2]>percent_sim_thresh:
-                            print os.path.basename(item[0].filename),
-                            print os.path.basename(item[1].filename),
-                            print item[2]
+##                            print os.path.basename(item[0].filename),
+##                            print os.path.basename(item[1].filename),
+##                            print item[2]
+                            group.append(item[0])
+                            group.append(item[1])
+
+    return set(group)
+
+
 
 
 

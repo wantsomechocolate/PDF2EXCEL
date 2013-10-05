@@ -17,20 +17,20 @@ import os
 import rotate_and_crop as rnc
 from marbles import glass as useful
 
-wdir="C:/Users/James McGlynn/My Programs/Python Programs/pdf2txt/CompareExperiment/"
-filename="compare_8.pdf"
+wdir="C:/Users/James McGlynn/My Programs/Python Programs/pdf2txt/CompareExperiment/compare/"
+filename="Test_Steam.pdf"
 filepath=wdir+filename
 
 ext='.png'
-zoom_factor=1
+zoom_factor=4
 image_handle_list=[]
 
 def pdf2imglist(pdf_path):
     ## Where should individual pages of pdf be saved
-    save_dir_pdf=pdf_path[:pdf_path.rindex(".")]+'/pdf_2/'
+    save_dir_pdf=pdf_path[:pdf_path.rindex(".")]+'/pdf_9_13_13/'
 
     ## Where should individual images be saved
-    save_dir_img=pdf_path[:pdf_path.rindex(".")]+'/images_2/'
+    save_dir_img=pdf_path[:pdf_path.rindex(".")]+'/images_9_13_13/'
 
     ## Make pdf directory
     if not os.path.exists(save_dir_pdf): os.makedirs(save_dir_pdf)
@@ -44,7 +44,8 @@ def pdf2imglist(pdf_path):
     ## Get the number of pages in the pdf
     num_pages=pdf_handle.getNumPages()
 
-    print num_pages
+    print "There are "+str(num_pages)+" pages.
+    print "Progress will be shown with dots. 
 
     ## iterate through every page
     for i in range(num_pages):
@@ -52,84 +53,84 @@ def pdf2imglist(pdf_path):
         ## Initialize a place to put the output
         output=PdfFileWriter()
 
-        print 2
+        #print 2
 
-        ## Use getPage to assign a page to its on variable
+        ## Use getPage to assign a page to its own variable
         page=pdf_handle.getPage(i)
 
-        print 3
+        #print 3
 
         ## Zoom the page so that when saved, it doesn't look like shit
         page.scaleBy(zoom_factor)
 
-        print 4
+        #print 4
 
         ## Put the page into output
         output.addPage(page)
 
-        print 5
+        #print 5
 
         ## Prepare the pdf filename
         output_file=save_dir_pdf+useful.add_to_filename(filename,"_"+str(i+1))
 
-        print 6
+        #print 6
 
         ## Get ready to save the file
         outputStream = file(output_file, "wb")
 
-        print 7
+        #print 7
 
         ## Save the file
         output.write(outputStream)
 
-        print 8
+        #print 8
 
         ## Close the file
         outputStream.close()
 
-        print 9
+        #print 9 - the item below takes a long time
 
         ## Open up the pdf as a wand image object
         im=wand(filename=output_file)
 
-        print 10
+        #print 10
 
         ## Prepare the image filename
         image_path=save_dir_img+filename[:filename.rindex('.')]+'_'+str(i+1)+ext
 
-        print 11
+        #print 11
 
         ## Save the image in png format to whatever the default mode is that wand chooses
         im.save(filename=image_path)
 
-        print 12
+        #print 12
 
         ## Open the file as a python image library object
         im=pili.open(image_path)
 
-        print 13
+        #print 13
 
         ## Convert the image from whatever mode to grayscale
-        #im=im.convert('L')
+        im=im.convert('L')
 
         ## Rotate and crop the image
-        #im=rnc.rotate_and_crop(im)
+        im=rnc.rotate_and_crop(im)
         
         #im=im.resize((im.size[0],im.size[1]))
 
         ## Save the image
-        #im.save(image_path)
+        im.save(image_path)
         
         ## Append the image handle to a list of image handles so the function can return something useful
         image_handle_list.append(im)
 
-        print 14
+        print ".",
 
     return image_handle_list
 
-print 15
+print ""
 
 image_handle_list=pdf2imglist(filepath)
 
-print 16
+print "Finished!"
 
